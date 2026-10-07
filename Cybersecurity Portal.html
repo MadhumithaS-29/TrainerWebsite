@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cybersecurity Portal</title>
+<style>
+:root{--bg:#070d1a;--panel:#0d1730;--panel2:#12203f;--line:#1f3158;--cy:#22d3ee;--tx:#e8eef9;--mu:#8ea2c4;--ok:#34d399;--warn:#fbbf24;--bad:#f87171;--pt:env(safe-area-inset-top,0px);box-sizing:border-box;padding-top:var(--pt);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#070d1a}}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 Inter,Manrope,system-ui,-apple-system,"Segoe UI",sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+#side{position:fixed;inset:0 auto 0 0;width:270px;background:var(--panel);border-right:1px solid var(--line);padding:calc(18px + var(--pt)) 14px 18px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;z-index:20;transition:transform .2s}
+.brand b{display:block;font-size:17px;letter-spacing:.04em}.brand span{color:var(--mu);font-size:13px}.brand i{color:var(--cy);font-style:normal;font-size:12px}
+#q{width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--tx);font:inherit;font-size:14px}
+#res{display:none;background:var(--bg);border:1px solid var(--line);border-radius:8px;max-height:220px;overflow:auto}
+#res button{display:block;width:100%;text-align:left;background:none;border:0;padding:8px 12px;font-size:13px;border-bottom:1px solid var(--line)}
+#res button:hover{background:var(--panel2)}#res small{color:var(--mu);display:block}
+nav{display:flex;flex-direction:column;gap:2px}
+nav button{display:flex;align-items:center;gap:10px;background:none;border:0;border-left:3px solid transparent;padding:9px 10px;border-radius:0 8px 8px 0;text-align:left;color:var(--mu);transition:background .15s,color .15s}
+nav button:hover{background:var(--panel2);color:var(--tx)}
+nav button.on{background:var(--panel2);color:var(--tx);border-left-color:var(--cy)}
+nav svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8}
+nav .ck{margin-left:auto;color:var(--ok);font-size:13px;opacity:0}nav button.done .ck{opacity:1}
+.prog{margin-top:auto;font-size:13px;color:var(--mu)}.bar{height:6px;background:var(--bg);border-radius:6px;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--cy);transition:width .3s}
+#top{display:none;position:fixed;top:0;left:0;right:0;padding:calc(10px + var(--pt)) 14px 10px;background:var(--panel);border-bottom:1px solid var(--line);z-index:15;align-items:center;gap:12px}
+#top button{background:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px}
+main{margin-left:270px;padding:36px clamp(16px,4vw,56px) 80px;max-width:1100px}
+section{display:none}section.on{display:block;animation:in .2s}
+@keyframes in{from{opacity:.4}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+h1{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:0 0 10px;letter-spacing:-.02em}
+h2{font-size:21px;margin:34px 0 12px}h3{font-size:16px;margin:0 0 6px}
+p{margin:0 0 10px;max-width:70ch}.lead{color:var(--mu);font-size:17px;max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card p{color:var(--mu);font-size:14.5px;margin:0 0 8px}.card p b{color:var(--tx)}
+.hero{background:linear-gradient(135deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:clamp(20px,4vw,40px);margin-bottom:8px}
+.cta{background:var(--cy);color:#04202a;border:0;border-radius:10px;padding:11px 20px;font-weight:700;margin-top:10px;transition:filter .15s}.cta:hover{filter:brightness(1.1)}
+.mod{text-align:left;color:var(--tx);transition:border-color .15s}.mod:hover{border-color:var(--cy)}
+.path{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.step{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:14px;color:var(--mu)}
+.step.done{border-color:var(--ok);color:var(--ok)}.path em{color:var(--line);font-style:normal}
+.code{position:relative;background:#050a14;border:1px solid var(--line);border-radius:8px;padding:10px 70px 10px 12px;margin:8px 0;font:13.5px/1.5 ui-monospace,"SF Mono",Menlo,Consolas,monospace;color:var(--cy);overflow-x:auto;white-space:pre}
+.cp{position:absolute;right:6px;top:6px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:2px 9px;font-size:12px}
+.cp:hover{border-color:var(--cy)}
+details{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:10px}
+summary{padding:14px 16px;cursor:pointer;font-weight:600;display:flex;gap:10px;align-items:center;list-style:none}
+summary::-webkit-details-marker{display:none}summary::after{content:"+";margin-left:auto;color:var(--cy)}details[open] summary::after{content:"–"}
+details>div{padding:0 16px 14px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.tabs button{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 14px;font-size:14px;color:var(--mu)}
+.tabs button.on{border-color:var(--cy);color:var(--tx);background:var(--panel2)}
+.tag{font-size:12px;padding:2px 9px;border-radius:999px;border:1px solid}
+.hi{border-color:var(--bad);color:var(--bad)}.md{border-color:var(--warn);color:var(--warn)}.ok{border-color:var(--ok);color:var(--ok)}
+.note{border-left:3px solid var(--warn);background:var(--panel);padding:10px 14px;border-radius:0 8px 8px 0;font-size:14.5px;color:var(--mu);margin:12px 0}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+ul{margin:0 0 8px;padding-left:20px;color:var(--mu);font-size:14.5px}
+.win{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+.win>div{padding:10px 14px;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--mu)}.win>div:last-child{border:0}.win b{color:var(--cy);display:inline-block;min-width:130px}
+.learn{margin-top:30px;padding-top:18px;border-top:1px solid var(--line)}
+.learn button{background:none;border:1px solid var(--ok);color:var(--ok);border-radius:10px;padding:9px 18px;font-weight:600}
+.learn button.on{background:var(--ok);color:#04201a}
+table{width:100%;border-collapse:collapse;font-size:14.5px}td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--mu)}td:first-child{color:var(--cy);font-family:ui-monospace,Menlo,monospace;white-space:nowrap}
+.wrapx{overflow-x:auto}
+@media (max-width:860px){#side{transform:translateX(-100%)}#side.open{transform:none}#top{display:flex}main{margin-left:0;padding-top:76px}.cmp{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="top"><button id="menu" aria-label="Open menu">Menu</button><b>Cybersecurity Portal</b></div>
+<aside id="side">
+  <div class="brand"><b>CYBERSECURITY PORTAL</b><span>Cybersecurity Training Platform</span><br><i>Learn. Analyze. Secure.</i></div>
+  <input id="q" type="search" placeholder="Search topics, e.g. grep, XSS" aria-label="Search">
+  <div id="res"></div>
+  <nav id="nav"></nav>
+  <div class="prog"><span id="pt">0 of 7 learned</span><div class="bar"><i id="pb"></i></div></div>
+</aside>
+<main id="main"></main>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const IC={overview:'<path d="M3 11l9-8 9 8M5 10v10h14V10"/>',net:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',nmap:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/>',zen:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/>',ws:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',linux:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 10l3 2-3 2M12 15h5"/>',web:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',ref:'<path d="M6 3h12v18l-6-4-6 4z"/>'};
+const S=[["overview","Overview"],["net","Networking Basics"],["nmap","Nmap"],["zen","Zenmap"],["ws","Wireshark"],["linux","Linux Essentials"],["web","Web Vulnerabilities"],["ref","Quick Reference"]];
+const NET=[["IP Address","A number that identifies a device on a network, like 192.168.1.20.","Tools like Nmap use IP addresses to say which device to look at."],["MAC Address","A hardware address built into a network card.","It identifies a device on the local network, and shows up in scans and captures."],["Private IP Address","An address used inside a local network, such as 192.168.x.x or 10.x.x.x.","Scans on your own network usually target private addresses."],["Subnet Mask","Shows which part of an IP address is the network and which part is the device.","It defines the size of a network, for example /24 means 254 usable hosts."],["Default Gateway","The router address a device uses to reach other networks.","Traffic leaving your network goes through it."],["DNS","Turns names like example.com into IP addresses.","Many captures show DNS lookups first, before the main traffic."],["DHCP","Automatically gives devices an IP address and network settings.","It explains why a device's IP can change."],["Ports","Numbered doors on a device. Each service listens on a port, like 80 for web.","Open ports show which services a device offers."],["TCP","Reliable, connection-based transport. Both sides confirm data arrived.","Web, SSH, and most scans you run use TCP."],["UDP","Fast, connectionless transport with no delivery confirmation.","DNS and streaming use it. UDP scans are slower and less certain."],["Client","A device that asks for a service, like your laptop loading a page.","In a capture, the client starts the conversation."],["Access Point","A device that connects wireless clients to a network.","It is how Wi-Fi devices join the same network as wired ones."],["Router","Connects networks and forwards traffic between them.","It decides where packets go next."]];
+const NM=[["Host Discovery","Finds which devices are online without scanning ports.",[["nmap -sn 192.168.1.0/24","Ping scan of a whole network range.","Hosts listed as 'Host is up'. Each one is a live device."]]],["Basic Port Scan","Checks the most common ports on a target.",[["nmap 192.168.1.10","Scans the 1000 most common TCP ports.","Open means a service is listening. Closed means reachable but nothing listening. Filtered means a firewall is blocking the answer."]]],["Service and Version Detection","Asks open ports which software and version is running.",[["nmap -sV 192.168.1.10","Detects service names and versions.","The VERSION column. Knowing the software tells you what it is and whether it is outdated."]]],["OS Detection","Guesses the operating system from how the target responds.",[["sudo nmap -O 192.168.1.10","Attempts to identify the OS. Needs admin rights.","The 'OS details' line. Treat it as a guess, not a fact."]]],["Detailed Scanning","Combines several checks and adds more output.",[["nmap -A 192.168.1.10","Aggressive scan: OS, versions, and default scripts.","Extra script output under each port, such as titles and server info. Louder and slower."],["nmap -p- 192.168.1.10","Scans all 65535 ports.","Services on unusual ports that the default scan misses."],["nmap -v 192.168.1.10","Shows progress as the scan runs.","Useful on slow scans to see what is happening."]]]];
+const WSF=[["ip.addr == 192.168.1.10","Shows packets to or from that IP.","When you care about one device."],["dns","Shows only DNS packets. Replace with http, icmp, arp, and so on.","To focus on a single protocol."],["tcp.port == 80","Shows traffic using port 80 on either side.","To follow one service."],["tcp","Shows all TCP traffic.","To hide UDP and other noise."],["udp","Shows all UDP traffic.","To look at DNS, DHCP, or streaming."],["ip.addr == 192.168.1.10 && tcp.port == 22","Combines two filters with &&.","To narrow down quickly."]];
+const LX=[["Navigation",[["pwd","Show current folder","Prints the full path of where you are."],["ls","List files","Add -a to include hidden files."],["cd","Change folder","cd .. goes up one level. cd ~ goes home."]]],["Files and Directories",[["touch notes.txt","Create an empty file","Also updates a file's timestamp."],["mkdir lab","Create a folder","Use -p to create nested folders."],["cp a.txt b.txt","Copy a file","Use -r to copy folders."],["mv a.txt lab/","Move or rename","Same command does both."],["rm a.txt","Delete a file","There is no recycle bin. Check before you press Enter."]]],["Viewing Files",[["cat file.txt","Print a whole file","Best for short files."],["less file.txt","Scroll through a file","Press q to quit, / to search."],["head -n 10 file.txt","First lines","Default is 10 lines."],["tail -n 10 file.txt","Last lines","tail -f follows a log as it grows."]]],["Searching",[["grep \"error\" file.txt","Find text inside files","Add -i to ignore case, -r to search folders."],["find . -name \"*.txt\"","Find files by name","The dot means start in the current folder."]]],["Permissions",[["ls -l","Show permissions","Read the first column, like -rwxr-xr--. Groups of three are owner, group, others. r=read, w=write, x=execute."],["chmod +x script.sh","Change permissions","+x makes a file runnable. chmod 644 sets numeric permissions."]]],["Networking",[["ip a","Show your IP addresses","Replaces the older ifconfig."],["ping -c 4 192.168.1.1","Test if a host answers","-c 4 sends four packets and stops."],["ss -tuln","List listening ports","Shows which services run on your own machine."]]],["System Information",[["whoami","Show current user","Handy before using sudo."],["uname -a","Show system and kernel info","Tells you the OS and architecture."],["hostname","Show the machine name","Useful when you work on several machines."]]]];
+const WEB=[
+{n:"SQL Injection",lv:"High",what:"An attacker's input changes the meaning of a database query instead of being treated as plain data.",how:"The application builds a query by joining user input into the query text. The database cannot tell where the developer's query ends and the input begins.",why:"Can expose, change, or delete data, and can bypass login checks.",test:"Look for places where input reaches a database, such as search boxes, login forms, and filters. Notice whether unusual characters cause errors or change results.",prev:["Use parameterized queries (prepared statements).","Give the database account only the permissions it needs.","Validate input and hide detailed database errors."],code:"// Unsafe: input becomes part of the query\nquery = \"SELECT * FROM users WHERE name = '\" + input + \"'\"\n\n// Safer: input is passed as data\nquery = \"SELECT * FROM users WHERE name = ?\"\nrun(query, [input])"},
+{n:"IDOR",lv:"High",what:"Insecure Direct Object Reference. The app uses an ID to find data and never checks that you are allowed to see it.",how:"Records are fetched by a number or name in the request, such as an order or profile ID, and the server trusts it.",why:"Users can read or change other people's data just by changing an identifier.",test:"Notice where requests contain identifiers. Ask what happens if another valid identifier is used while logged in as the same user.",prev:["Check on the server that the logged-in user owns or may access the object.","Do not rely on hidden or hard-to-guess IDs as protection.","Deny by default."]},
+{n:"Path Traversal",lv:"High",what:"Input is used to build a file path, letting someone reach files outside the intended folder.",how:"The app joins a user-supplied file name to a folder path without checking that the result stays inside that folder.",why:"Can expose configuration files, source code, and other sensitive files.",test:"Look for features that load files by name, like downloads or image viewers. Think about how special path sequences such as '..' are handled.",prev:["Avoid using user input in file paths.","Allow only known file names, or map IDs to files.","Resolve the final path and confirm it is inside the allowed folder."],code:"// Safer idea\nbase = \"/app/files\"\npath = resolve(base + \"/\" + name)\nif not path.startsWith(base): reject()"},
+{n:"Broken Access Control",lv:"High",what:"The app fails to enforce what each user is allowed to do or see.",how:"Authentication proves who you are. Authorization decides what you may do. Problems appear when checks exist only in the interface, or are missing on some pages and actions.",why:"Regular users may reach admin features or other users' resources.",test:"Compare what different roles can see. Ask whether hiding a button is the only thing stopping access to a page or action.",prev:["Enforce permissions on the server for every request.","Use roles and permissions consistently.","Log and review denied access attempts."]},
+{n:"Reflected XSS",lv:"Medium",what:"Cross-site scripting where input from a request is placed in the response page and runs as script in the browser.",how:"The server includes untrusted input in HTML without encoding it, so the browser treats it as code instead of text.",why:"Can steal session data, change page content, or act as the victim user.",test:"Notice where text you send is shown back on the page. Observe whether special characters are shown literally or interpreted.",prev:["Encode output for the place it is used (HTML, attribute, JavaScript).","Validate and limit input.","Use a Content Security Policy and HttpOnly cookies as extra layers."],code:"// Unsafe\nhtml = \"<p>\" + input + \"</p>\"\n// Safer\nhtml = \"<p>\" + htmlEncode(input) + \"</p>\""},
+{n:"Command Injection",lv:"High",what:"Untrusted input is passed to an operating system command and changes what runs.",how:"The app builds a shell command as text and includes user input, so extra command characters get interpreted by the shell.",why:"Can let an attacker run commands on the server, which may mean full compromise.",test:"Look for features that seem to run system tools, like ping or file conversion. Think about how input is handled before reaching the command.",prev:["Avoid calling system commands when a library can do the job.","If needed, pass arguments as a list, not one shell string.","Allow-list valid input, such as only IP addresses."],code:"// Unsafe: one shell string\nrun_shell(\"ping \" + input)\n// Safer: fixed command, separate argument\nrun([\"ping\", \"-c\", \"1\", validated_ip])"}];
+
+const DONE=new Set();try{JSON.parse(localStorage.getItem("cp-done")||"[]").forEach(x=>DONE.add(x))}catch(e){}
+const copyBtn=()=>'<button class="cp">Copy</button>';
+const code=t=>`<div class="code" data-c="${esc(t).replace(/"/g,"&quot;")}">${esc(t)}${copyBtn()}</div>`;
+const learn=id=>`<div class="learn"><button data-learn="${id}" class="${DONE.has(id)?"on":""}">${DONE.has(id)?"Learned ✓":"Mark as learned"}</button></div>`;
+const head=(t,d)=>`<h1>${t}</h1><p class="lead">${d}</p>`;
+const IDX=[];const idx=(sec,title,text)=>IDX.push({sec,title,text:(title+" "+text).toLowerCase()});
+
+const P={};
+P.overview=()=>`<div class="hero"><h1>Cybersecurity Fundamentals</h1><p class="lead">Build the foundations needed to understand networks, perform basic reconnaissance, analyze traffic, use essential Linux commands, and recognize common web security vulnerabilities.</p><button class="cta" data-go="net">Start Learning →</button></div>
+<h2>Training modules</h2><div class="grid">${[["net","Networking Basics","Learn the essential networking concepts required for cybersecurity tools."],["nmap","Nmap","Learn how Nmap is used for network discovery and port scanning."],["ws","Wireshark","Learn how to capture and inspect network traffic."],["linux","Linux Essentials","Learn the Linux commands commonly used during cybersecurity activities."],["web","Web Vulnerabilities","Understand common web application security vulnerabilities."]].map((m,i)=>`<button class="card mod" data-go="${m[0]}"><h3>${i+1}. ${m[1]}</h3><p>${m[2]}</p></button>`).join("")}</div>
+<h2>Learning progress</h2><div class="path">${[["net","Networking"],["nmap","Nmap"],["ws","Wireshark"],["linux","Linux"],["web","Web Security"]].map((s,i,a)=>`<button class="step ${DONE.has(s[0])?"done":""}" data-go="${s[0]}">${DONE.has(s[0])?"✓ ":""}${s[1]}</button>${i<a.length-1?"<em>—</em>":""}`).join("")}</div>
+<p style="margin-top:14px;color:var(--mu);font-size:14.5px">Learn each concept, understand how it works, practice with the commands, then use the Quick Reference during the workshop.</p>`;
+
+P.net=()=>{NET.forEach(n=>idx("net",n[0],n[1]+n[2]));return head("Networking Basics","The vocabulary you need before using Nmap and Wireshark.")+`<div class="grid">${NET.map(n=>`<div class="card"><h3>${n[0]}</h3><p><b>What it is.</b> ${n[1]}</p><p><b>Why it matters.</b> ${n[2]}</p></div>`).join("")}</div>`+learn("net")};
+
+P.nmap=()=>{idx("nmap","What is Nmap","network discovery security auditing hosts ports services");NM.forEach(g=>g[2].forEach(c=>idx("nmap",g[0]+": "+c[0],c[1]+c[2])));
+return head("Nmap","Nmap is a network discovery and security auditing tool.")+`<div class="card"><h3>What Nmap does</h3><ul><li>Discovers hosts that are online</li><li>Scans ports</li><li>Identifies services</li><li>Gathers basic information about a target</li></ul></div><div class="note">Only scan networks and devices you own or have permission to test.</div><h2>Essential commands</h2>`+NM.map(g=>`<details><summary>${g[0]}</summary><div><p style="color:var(--mu)">${g[1]}</p>${g[2].map(c=>code(c[0])+`<p><b>Purpose.</b> <span style="color:var(--mu)">${c[1]}</span></p><p><b>What to look for.</b> <span style="color:var(--mu)">${c[2]}</span></p>`).join("")}</div></details>`).join("")+learn("nmap")};
+
+P.zen=()=>{idx("zen","Nmap vs Zenmap","graphical frontend command-line");idx("zen","Zenmap interface","target profile command scan");
+return head("Zenmap","Zenmap is a graphical frontend for Nmap.")+`<div class="cmp"><div class="card"><h3>Nmap</h3><ul><li>Command-line tool</li><li>Powerful and flexible</li><li>Uses commands and options</li><li>Commonly used by security professionals</li><li>Direct control over scan options</li></ul></div><div class="card" style="border-color:var(--cy)"><h3>Zenmap</h3><ul><li>Graphical interface for Nmap</li><li>Easier for beginners</li><li>Graphical workflow</li><li>Includes Target, Profile, Command and Scan fields</li><li>Uses Nmap underneath</li></ul></div></div><p style="margin-top:10px;color:var(--mu)">Both run the same scanning engine. Zenmap builds the Nmap command for you.</p>
+<h2>Interface fields</h2><div class="win"><div><b>Target</b>The host or network to be scanned.</div><div><b>Profile</b>A predefined scan configuration.</div><div><b>Command</b>The Nmap command generated from the selected configuration.</div><div><b>Scan</b>Starts the scan and displays the results.</div></div><div class="note" style="border-color:var(--cy)">Tip: read the Command field after choosing a profile. It is a quick way to learn Nmap options.</div>`+learn("zen")};
+
+P.ws=()=>{idx("ws","What is Wireshark","protocol analyzer capture inspect traffic");WSF.forEach(f=>idx("ws","Filter: "+f[0],f[1]+f[2]));
+return head("Wireshark","Wireshark is a network protocol analyzer used to capture and inspect network traffic.")+`<h2>Interface</h2><div class="win"><div><b>Interface Selection</b>Choose the network interface from which traffic should be captured.</div><div><b>Packet List</b>Displays captured packets.</div><div><b>Packet Details</b>Displays detailed information about the selected packet.</div><div><b>Packet Bytes</b>Displays the raw packet data.</div></div><h2>Display filters</h2><p style="color:var(--mu)">Type a filter in the bar at the top. It turns green when the filter is valid.</p><div class="grid">${WSF.map(f=>`<div class="card">${code(f[0])}<p><b>What it does.</b> ${f[1]}</p><p><b>When to use it.</b> ${f[2]}</p></div>`).join("")}</div>`+learn("ws")};
+
+P.linux=()=>{LX.forEach(c=>c[1].forEach(x=>idx("linux",x[0],x[1]+x[2])));
+return head("Linux Essentials","Only the commands used in this workshop.")+`<div class="tabs" id="lt">${LX.map((c,i)=>`<button data-lt="${i}" class="${i?"":"on"}">${c[0]}</button>`).join("")}</div>`+LX.map((c,i)=>`<div class="lp" data-lp="${i}" style="${i?"display:none":""}"><div class="grid">${c[1].map(x=>`<div class="card">${code(x[0])}<p><b>${x[1]}.</b></p><p>${x[2]}</p></div>`).join("")}</div></div>`).join("")+learn("linux")};
+
+P.web=()=>{WEB.forEach(v=>idx("web",v.n,v.what+v.how));
+return head("Web Vulnerabilities","Six common weaknesses: what they are, why they happen, and how to prevent them.")+`<div class="note">This page teaches concepts. It does not list specific targets, endpoints, or answers.</div>`+WEB.map(v=>`<details id="v-${v.n.replace(/\W/g,"")}"><summary>${v.n} <span class="tag ${v.lv=="High"?"hi":"md"}">${v.lv} impact</span></summary><div><h3>What is it?</h3><p>${v.what}</p><h3>How does it happen?</h3><p>${v.how}</p>${v.code?code(v.code):""}<h3>Why is it dangerous?</h3><p>${v.why}</p><h3>What should a tester understand?</h3><p>${v.test}</p><h3>How to prevent it?</h3><ul>${v.prev.map(p=>`<li>${p}</li>`).join("")}</ul></div></details>`).join("")+learn("web")};
+
+P.ref=()=>{const t=(a,f)=>`<div class="wrapx"><table>${a.map(f).join("")}</table></div>`;
+return head("Quick Reference","Workshop cheat sheet for fast lookup.")+`<h2>Networking</h2><div class="card">${t(NET,n=>`<tr><td>${n[0]}</td><td>${n[1]}</td></tr>`)}</div><h2>Nmap</h2><div class="card">${t(NM.flatMap(g=>g[2]),c=>`<tr><td>${esc(c[0])}</td><td>${c[1]}</td></tr>`)}</div><h2>Wireshark</h2><div class="card">${t(WSF,f=>`<tr><td>${f[0]}</td><td>${f[1]}</td></tr>`)}</div><h2>Linux</h2><div class="card">${t(LX.flatMap(c=>c[1]),x=>`<tr><td>${esc(x[0])}</td><td>${x[1]}</td></tr>`)}</div><h2>Web security</h2><div class="card">${t(WEB,v=>`<tr><td>${v.n}</td><td>${v.what}</td></tr>`)}</div>`};
+
+const LEARN=["net","nmap","zen","ws","linux","web","ref"];
+function render(){$("#main").innerHTML=S.map(s=>`<section id="s-${s[0]}">${P[s[0]]()}</section>`).join("");
+ $("#nav").innerHTML=S.map(s=>`<button data-go="${s[0]}" id="n-${s[0]}"><svg viewBox="0 0 24 24">${IC[s[0]]}</svg>${s[1]}<span class="ck">✓</span></button>`).join("");}
+function prog(){const n=LEARN.filter(x=>DONE.has(x)).length;$("#pt").textContent=n+" of 7 learned";$("#pb").style.width=n/7*100+"%";S.forEach(s=>$("#n-"+s[0]).classList.toggle("done",DONE.has(s[0])))}
+function go(id,sub){if(!document.getElementById("s-"+id))id="overview";document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id=="s-"+id));S.forEach(s=>$("#n-"+s[0]).classList.toggle("on",s[0]==id));$("#side").classList.remove("open");window.scrollTo(0,0);try{history.replaceState(null,"","#"+id)}catch(e){}
+ if(sub){const d=document.getElementById(sub);if(d){d.open=true;d.scrollIntoView()}}}
+render();prog();
+document.addEventListener("click",e=>{const t=e.target;
+ const g=t.closest("[data-go]");if(g){go(g.dataset.go);return}
+ const l=t.closest("[data-learn]");if(l){const k=l.dataset.learn;DONE.has(k)?DONE.delete(k):DONE.add(k);try{localStorage.setItem("cp-done",JSON.stringify([...DONE]))}catch(e){}
+  const sec=l.closest("section").id.slice(2);const sc=window.scrollY;render();prog();go(sec);window.scrollTo(0,sc);return}
+ const c=t.closest(".cp");if(c){const txt=c.parentElement.dataset.c.replace(/&quot;/g,'"').replace(/&lt;/g,"<").replace(/&amp;/g,"&");
+  const ok=()=>{c.textContent="Copied";setTimeout(()=>c.textContent="Copy",1200)};
+  const fb=()=>{const a=document.createElement("textarea");a.value=txt;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){}a.remove()};
+  try{navigator.clipboard.writeText(txt).then(ok,fb)}catch(e){fb()}return}
+ const lt=t.closest("[data-lt]");if(lt){const i=lt.dataset.lt;document.querySelectorAll("[data-lt]").forEach(b=>b.classList.toggle("on",b.dataset.lt==i));document.querySelectorAll(".lp").forEach(p=>p.style.display=p.dataset.lp==i?"":"none");return}
+ const r=t.closest("[data-r]");if(r){const[s,sub]=r.dataset.r.split("|");go(s,sub||null);$("#q").value="";$("#res").style.display="none";return}
+});
+$("#menu").onclick=()=>$("#side").classList.toggle("open");
+$("#q").addEventListener("input",e=>{const v=e.target.value.trim().toLowerCase(),r=$("#res");if(!v){r.style.display="none";return}
+ const m=IDX.filter(x=>x.text.includes(v)).slice(0,8);const nm=Object.fromEntries(S);
+ r.innerHTML=m.length?m.map(x=>`<button data-r="${x.sec}${x.sec=="web"?"|v-"+x.title.replace(/\W/g,""):""}">${esc(x.title)}<small>${nm[x.sec]}</small></button>`).join(""):'<button disabled>No match. Try a shorter term.</button>';r.style.display="block"});
+go((location.hash||"#overview").slice(1));
+</script>
+</body>
+</html>
