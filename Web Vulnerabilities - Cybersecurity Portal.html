@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Web Vulnerabilities - Cybersecurity Portal</title>
+<style>
+:root{--bg:#070d1a;--panel:#0d1730;--p2:#12203f;--line:#1f3158;--cy:#22d3ee;--tx:#e8eef9;--mu:#8ea2c4;--ok:#34d399;--warn:#fbbf24;--bad:#f87171;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.65 Inter,Manrope,system-ui,-apple-system,"Segoe UI",sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+#side{position:fixed;inset:0 auto 0 0;width:270px;background:var(--panel);border-right:1px solid var(--line);padding:calc(18px + env(safe-area-inset-top,0px)) 14px 18px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;z-index:20;transition:transform .2s}
+.brand b{display:block;font-size:17px;letter-spacing:.04em}.brand span{color:var(--mu);font-size:13px}
+#q{width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--tx);font:inherit;font-size:14px}
+#res{display:none;background:var(--bg);border:1px solid var(--line);border-radius:8px;max-height:220px;overflow:auto}
+#res button{display:block;width:100%;text-align:left;background:none;border:0;padding:8px 12px;font-size:13px;border-bottom:1px solid var(--line)}#res button:hover{background:var(--p2)}#res small{color:var(--mu);display:block}
+nav{display:flex;flex-direction:column;gap:2px}
+nav button{display:flex;align-items:center;gap:8px;background:none;border:0;border-left:3px solid transparent;padding:9px 10px;border-radius:0 8px 8px 0;text-align:left;color:var(--mu);transition:background .15s,color .15s}
+nav button:hover{background:var(--p2);color:var(--tx)}nav button.on{background:var(--p2);color:var(--tx);border-left-color:var(--cy)}
+nav .ck{margin-left:auto;color:var(--ok);font-size:13px;opacity:0}nav button.done .ck{opacity:1}
+.prog{margin-top:auto;font-size:13px;color:var(--mu)}.bar{height:6px;background:var(--bg);border-radius:6px;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--cy);transition:width .3s}
+#top{display:none;position:fixed;top:0;left:0;right:0;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;background:var(--panel);border-bottom:1px solid var(--line);z-index:15;align-items:center;gap:12px}
+#top button{background:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px}
+main{margin-left:270px;padding:36px clamp(16px,4vw,56px) 80px;max-width:1060px}
+section{display:none}section.on{display:block}
+h1{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:0 0 10px;letter-spacing:-.02em}h2{font-size:21px;margin:34px 0 12px}h3{font-size:16px;margin:0 0 6px}
+p{margin:0 0 10px;max-width:70ch}.lead{color:var(--mu);font-size:17px;max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}.card p,.card li{color:var(--mu);font-size:14.5px}.card p{margin:0 0 8px}
+.hero{background:linear-gradient(135deg,var(--p2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:clamp(20px,4vw,40px)}
+.cta{background:var(--cy);color:#04202a;border:0;border-radius:10px;padding:11px 20px;font-weight:700;margin-top:10px}.cta:hover{filter:brightness(1.1)}
+.mod{text-align:left;transition:border-color .15s}.mod:hover{border-color:var(--cy)}
+.tag{font-size:12px;padding:2px 9px;border-radius:999px;border:1px solid;margin-left:6px;white-space:nowrap;vertical-align:middle}
+.hi{border-color:var(--bad);color:var(--bad)}.md{border-color:var(--warn);color:var(--warn)}.ct{border-color:var(--cy);color:var(--cy)}
+.glance{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:16px 0}
+.glance div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--mu)}.glance b{display:block;color:var(--tx);font-size:15px}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:6px 0 12px}
+.flow div{flex:1 1 150px;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--cy);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--mu)}.flow b{color:var(--tx);display:block;font-size:13px}
+.flow div.x{border-top-color:var(--bad)}
+.code{position:relative;background:#050a14;border:1px solid var(--line);border-radius:8px;padding:10px 70px 10px 12px;font:13.5px/1.55 ui-monospace,"SF Mono",Menlo,Consolas,monospace;overflow-x:auto;white-space:pre}
+.code.bad{border-left:3px solid var(--bad);color:#fecaca}.code.good{border-left:3px solid var(--ok);color:#a7f3d0}
+.cp{position:absolute;right:6px;top:6px;background:var(--p2);border:1px solid var(--line);border-radius:6px;padding:2px 9px;font-size:12px;color:var(--tx)}.cp:hover{border-color:var(--cy)}
+.tabs{display:flex;gap:6px;margin:10px 0 8px}.tabs button{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 14px;font-size:14px;color:var(--mu)}.tabs button.on{border-color:var(--cy);color:var(--tx);background:var(--p2)}
+ul{margin:0 0 8px;padding-left:20px;color:var(--mu);font-size:15px}li{margin-bottom:4px}
+.chk li{list-style:none;margin-left:-20px;padding-left:26px;position:relative}.chk li::before{content:"✓";position:absolute;left:4px;color:var(--ok)}
+.risk li::before{content:"!";color:var(--bad);font-weight:700}
+.note{border-left:3px solid var(--warn);background:var(--panel);padding:10px 14px;border-radius:0 8px 8px 0;font-size:14.5px;color:var(--mu);margin:12px 0}
+.key{border-left-color:var(--cy)}
+details{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
+summary{padding:12px 16px;cursor:pointer;font-weight:600;list-style:none;display:flex;gap:10px}summary::-webkit-details-marker{display:none}summary::after{content:"+";margin-left:auto;color:var(--cy)}details[open] summary::after{content:"–"}
+details>div{padding:0 16px 12px;color:var(--mu);font-size:15px}
+.wrapx{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:620px}th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;color:var(--mu)}th{color:var(--tx)}td:first-child{color:var(--cy);font-weight:600;white-space:nowrap}
+.learn{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap}
+.learn button{background:none;border:1px solid var(--ok);color:var(--ok);border-radius:10px;padding:9px 18px;font-weight:600}.learn button.on{background:var(--ok);color:#04201a}.learn .nx{border-color:var(--line);color:var(--mu)}
+
+/* Entry Points & Attack Surface */
+.entry-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:12px 0 22px}
+.entry-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.entry-card b{color:var(--tx);font-size:14.5px;display:flex;align-items:center;gap:6px}
+.entry-card p{color:var(--mu);font-size:13.5px;margin:0}
+.entry-ex{margin-top:auto;padding-top:8px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;color:var(--cy);background:#050a14;padding:6px 10px;border-radius:6px;border:1px solid var(--line);overflow-x:auto;white-space:nowrap}
+
+/* Exploit Mechanism Steps */
+.mech-steps{display:flex;flex-direction:column;gap:10px;margin:12px 0 16px}
+.mech-step{display:flex;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;align-items:flex-start}
+.mech-num{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--p2);border:1px solid var(--cy);color:var(--cy);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.mech-body{flex:1}
+.mech-body b{display:block;color:var(--tx);font-size:15px;margin-bottom:3px}
+.mech-body p{color:var(--mu);font-size:14px;margin:0}
+
+/* Payload Inspector & Anatomy */
+.payload-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin:12px 0 24px}
+.payload-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.payload-head b{font-size:15px;color:var(--tx)}
+.payload-tag{font-size:12px;padding:3px 9px;border-radius:6px;background:var(--p2);border:1px solid var(--line);color:var(--warn)}
+.payload-display{position:relative;background:#050a14;border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;padding:12px 70px 12px 14px;font:15px/1.5 ui-monospace,"SF Mono",Menlo,Consolas,monospace;color:#fef08a;margin-bottom:14px;overflow-x:auto;white-space:pre}
+.payload-context{font-size:13.5px;color:var(--mu);margin-bottom:14px}
+.token-table{width:100%;border-collapse:collapse;font-size:13.5px;margin-bottom:16px}
+.token-table th{color:var(--mu);border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;font-weight:600}
+.token-table td{padding:9px 10px;border-bottom:1px solid var(--line);color:var(--tx);vertical-align:top}
+.token-code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;color:var(--cy);font-weight:700;background:#050a14;padding:2px 7px;border-radius:4px;border:1px solid var(--line);white-space:nowrap}
+.token-role{display:inline-block;padding:2px 7px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--p2);border:1px solid var(--line);color:var(--warn);white-space:nowrap}
+.transform-box{background:#050a14;border:1px solid var(--line);border-radius:8px;padding:14px;margin-top:14px}
+.transform-title{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mu);margin-bottom:8px;font-weight:700}
+.transform-code{font:13px/1.5 ui-monospace,"SF Mono",Menlo,Consolas,monospace;color:var(--tx);white-space:pre-wrap;word-break:break-word}
+.neutral-box{background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.25);border-radius:8px;padding:12px 14px;margin-top:14px;font-size:14px;color:var(--tx)}
+.neutral-box b{color:var(--ok);display:block;margin-bottom:4px;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+
+/* Ambient Cyber Spotlight Glow */
+#cyber-spotlight{
+ position:fixed;
+ inset:0;
+ pointer-events:none;
+ z-index:2;
+ background:radial-gradient(
+   600px circle at var(--mouse-x,-600px) var(--mouse-y,-600px),
+   rgba(34,211,238,0.085),
+   rgba(18,32,63,0.03) 40%,
+   transparent 65%
+ );
+ opacity:1;
+ transition:opacity .3s ease;
+ mix-blend-mode:screen;
+}
+#cyber-spotlight.off{opacity:0}
+
+.spotlight-btn{
+ margin-top:10px;
+ background:none;
+ border:1px solid var(--line);
+ border-radius:8px;
+ padding:6px 10px;
+ font-size:12px;
+ color:var(--mu);
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ width:100%;
+ transition:all .15s;
+}
+.spotlight-btn:hover{
+ border-color:var(--cy);
+ color:var(--tx);
+ background:var(--p2);
+}
+.spotlight-btn.on{
+ color:var(--cy);
+ border-color:rgba(34,211,238,0.4);
+}
+.spotlight-btn b{font-size:11px;padding:1px 6px;border-radius:4px;background:var(--p2);border:1px solid var(--line)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}#cyber-spotlight,.spotlight-btn{display:none}}
+@media (hover:none) and (pointer:coarse){#cyber-spotlight,.spotlight-btn{display:none}}
+@media (max-width:860px){#side{transform:translateX(-100%)}#side.open{transform:none}#top{display:flex}main{margin-left:0;padding-top:76px}}
+</style>
+</head>
+<body>
+<div id="cyber-spotlight" aria-hidden="true"></div>
+<div id="top"><button id="menu" aria-label="Open menu">Menu</button><b>Web Vulnerabilities</b></div>
+<aside id="side">
+ <div class="brand"><b>CYBERSECURITY PORTAL</b><span>Web Vulnerabilities Module</span></div>
+ <input id="q" type="search" placeholder="Search, e.g. IDOR, payload, attack surface" aria-label="Search">
+ <div id="res"></div><nav id="nav"></nav>
+ <div class="prog">
+  <span id="pt"></span><div class="bar"><i id="pb"></i></div>
+  <button id="spot-btn" class="spotlight-btn on" title="Toggle cyber cursor spotlight"><span>✨ Cyber Glow</span><b id="spot-st">ON</b></button>
+ </div>
+</aside>
+<main id="main"></main>
+<script>
+const $=s=>document.querySelector(s),esc=s=>(s!=null?String(s):"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+const V=[
+{
+  id:"sqli",n:"SQL Injection",cat:"Injection",lv:"High",fix:"Parameterized queries",one:"Input changes the meaning of a database query.",
+  analogy:"Like writing on a form 'pay the bearer' and the clerk treating your note as an instruction instead of a name.",
+  what:"SQL Injection happens when an application mixes user input into a database query as text. The database cannot tell the developer's instructions from the user's data, so input can change what the query does.",
+  how:[["Input","User sends a value, such as a name or search term."],["Unsafe build","App joins the value into the query text."],["Database","Query runs with the changed meaning.",1],["Result","Wrong data returned, or data changed."]],
+  where:[
+    {surface:"Authentication & Login Forms",desc:"Username and password inputs that query a user database to verify credentials.",ex:"POST /login (fields: username, password)"},
+    {surface:"Search & Filter Inputs",desc:"Keyword searches, category selectors, and sort parameters concatenated into SQL clauses.",ex:"GET /products?cat=books&search=query"},
+    {surface:"URL Query Parameters & IDs",desc:"Direct database record lookups via query strings or route slugs.",ex:"GET /article?id=42"},
+    {surface:"HTTP Headers & Cookies",desc:"User-Agent, Referer, or session tokens logged or queried in relational databases.",ex:"Cookie: tracking_id=... or Header: X-Forwarded-For"}
+  ],
+  exploitMech:{
+    summary:"The application concatenates untrusted input directly into an SQL command string. The database parser cannot differentiate between SQL commands written by the developer and user data, allowing special control characters to alter the query logic.",
+    steps:[
+      {title:"Input Ingestion",desc:"User supplies input containing SQL control characters (such as quotes or boolean operators)."},
+      {title:"Unsafe String Assembly",desc:"The application stitches the raw input directly into the SQL statement string without parameter placeholders."},
+      {title:"Syntax Tree Alteration",desc:"The database parser reads input characters as SQL syntax rather than literal data, altering the query's boolean logic."},
+      {title:"Unauthorized Query Execution",desc:"The database executes the modified query, returning unauthorized records or bypassing password checks."}
+    ]
+  },
+  payload:{
+    sample:"' OR '1'='1' -- ",
+    context:"Supplied into a username or search field where the user value is placed inside single quotes",
+    breakdown:[
+      {token:"'",role:"Context Escape",desc:"Closes the developer's opening single quote, breaking out of the intended string data literal."},
+      {token:"OR '1'='1'",role:"Boolean Tautology",desc:"Injects an always-true logical condition into the WHERE clause, ensuring the query evaluates to TRUE for all rows."},
+      {token:"-- ",role:"Comment Delimiter",desc:"Tells the SQL engine to treat everything following in the query as a comment, preventing syntax errors from trailing quotes."}
+    ],
+    intended:"SELECT * FROM users WHERE name = '<user>' AND pass = '<pass>'",
+    injected:"SELECT * FROM users WHERE name = '' OR '1'='1' --' AND pass = '<pass>'",
+    transformNotes:"Because '1'='1' is always TRUE and trailing checks are commented out, the query matches records regardless of password.",
+    defenseNotes:"Parameterized queries (prepared statements) pass the entire payload strictly as literal data. The database searches for a user whose literal username matches that exact text string, completely neutralizing the injection."
+  },
+  why:["Reading data the user should never see","Bypassing login checks","Changing or deleting records","In serious cases, reaching the server itself"],
+  test:["List every place input reaches a database: search, login, filters, sorting.","Notice if unexpected characters cause errors or change the results.","Compare normal responses with responses to unusual input.","Error messages that mention a database are a strong hint."],
+  prev:["Use parameterized queries (prepared statements) everywhere","Use an ORM correctly, and avoid building raw query strings","Give the database account only the permissions it needs","Hide detailed database errors from users","Validate type and length of input as an extra layer"],
+  bad:"query = \"SELECT * FROM users WHERE name = '\" + input + \"'\"\nrun(query)",
+  good:"query = \"SELECT * FROM users WHERE name = ?\"\nrun(query, [input])   // input is always data",
+  mist:["Thinking filtering a few characters is enough","Escaping by hand instead of using parameters","Showing raw database errors on the page"],
+  chk:[
+    ["What is the root cause of SQL Injection?","Input is joined into the query text, so it can be read as part of the query."],
+    ["What is the main fix?","Parameterized queries, which keep data separate from the query."],
+    ["In ' OR '1'='1' -- , what does the single quote (') do?","It closes the developer's opening single quote, breaking out of the string literal so subsequent characters are parsed as SQL commands."]
+  ]
+},
+{
+  id:"idor",n:"IDOR",cat:"Access control",lv:"High",fix:"Server-side ownership checks",one:"Changing an ID gives access to someone else's data.",
+  analogy:"Like a hotel that gives you a key card for room 204 but lets the card open any room if you ask for 205.",
+  what:"IDOR (Insecure Direct Object Reference) happens when an application uses an identifier, such as an order number or user ID, to find data but never checks that the logged-in user is allowed to see it.",
+  how:[["Request","Page asks for a record using an ID."],["Server","Finds the record by ID and trusts the request."],["Missing check","Never asks: does this record belong to you?",1],["Result","Another user's data is returned."]],
+  where:[
+    {surface:"URL Query Parameters",desc:"Direct numerical or sequential object identifiers passed in GET query strings.",ex:"GET /receipt?id=1042"},
+    {surface:"RESTful API Endpoints",desc:"Resource IDs embedded in URL route paths used by web and mobile frontends.",ex:"GET /api/v1/users/892/profile"},
+    {surface:"Hidden Form Fields",desc:"Form inputs carrying object or account IDs that can be inspected and altered in browser tools.",ex:'<input type="hidden" name="account_id" value="4051">'},
+    {surface:"JSON Request Payloads",desc:"API request bodies referencing objects to view, update, or delete.",ex:'PUT /api/orders { "order_id": 5012, "status": "cancel" }'}
+  ],
+  exploitMech:{
+    summary:"The application exposes direct references to internal database records or files and relies on the client-supplied ID without verifying that the currently authenticated user owns or has permission to access that specific object.",
+    steps:[
+      {title:"Identifier Observation",desc:"A legitimate user inspects network traffic and spots direct identifiers referencing their own resources (e.g., id=1001)."},
+      {title:"Parameter Modification",desc:"The participant tampers with the identifier, changing it to reference an adjacent or targeted record (e.g., id=1002)."},
+      {title:"Missing Ownership Check",desc:"The server checks that the user is logged in, but never checks if the target record belongs to that specific user session."},
+      {title:"Unauthorized Resource Retrieval",desc:"The server queries the database with the requested ID and returns another user's private data."}
+    ]
+  },
+  payload:{
+    sample:"GET /api/invoices/1002 (Tampering ID from 1001 to 1002)",
+    context:"Revising an identifier in the browser address bar, API request, or HTTP client from your own record to a target record",
+    breakdown:[
+      {token:"1001 (Baseline)",role:"Authorized Reference",desc:"The original object ID belonging legitimately to the logged-in user session."},
+      {token:"1002 (Payload)",role:"Target Identifier",desc:"An altered ID pointing to a resource owned by another customer or tenant."},
+      {token:"Parameter Tampering",role:"Attack Vector",desc:"Substituting or sequentially iterating IDs (1001, 1002, 1003...) to enumerate private records."}
+    ],
+    intended:"SELECT * FROM invoices WHERE id = 1001 AND owner_id = <logged_in_user_id>",
+    injected:"SELECT * FROM invoices WHERE id = 1002  /* Missing owner check: server blindly queries requested ID */",
+    transformNotes:"Without an ownership predicate, the query retrieves the document regardless of which user is authenticated.",
+    defenseNotes:"Enforce server-side authorization: `WHERE id = ? AND owner_id = ?`. If the authenticated user does not own the requested ID, return 403 Forbidden or 404 Not Found."
+  },
+  why:["Exposure of other users' personal data","Ability to change or delete other users' records","Easy to automate across many records","Often leads to large data leaks"],
+  test:["Notice where requests contain identifiers (numbers, names, file IDs).","Ask what happens if another valid identifier is used by the same logged-in user.","Test with two accounts to see if one can reach the other's data.","Remember: hard-to-guess IDs do not replace permission checks."],
+  prev:["Check on the server that the user owns or may access each object","Deny by default when no rule allows access","Take the user identity from the session, not from the request","Use unpredictable IDs only as an extra layer","Log repeated access to records the user doesn't own"],
+  bad:"record = db.get(request.id)\nreturn record          // no owner check",
+  good:"record = db.get(request.id)\nif record.owner != session.user:\n    return 403\nreturn record",
+  mist:["Assuming hidden or long IDs are secret enough","Checking only that the user is logged in","Trusting a user ID sent by the browser"],
+  chk:[
+    ["Is a random-looking ID a fix for IDOR?","No. It makes guessing harder, but the server must still check permission."],
+    ["What should the server compare?","The owner of the object against the logged-in user."],
+    ["Where is an IDOR payload placed?","In URL query parameters, REST path segments, hidden form fields, or API request bodies referencing object IDs."]
+  ]
+},
+{
+  id:"traversal",n:"Path Traversal",cat:"File handling",lv:"High",fix:"Resolve and confirm the path",one:"Input escapes the intended folder to reach other files.",
+  analogy:"Like asking a librarian for a book from one shelf, then saying 'go up two floors' and getting into the staff office.",
+  what:"Path Traversal happens when user input is used to build a file path, and the app does not check that the final path stays inside the intended folder. Special path sequences can move the path outward.",
+  how:[["Input","User names a file to download or view."],["Path built","App joins the name to a base folder."],["No check","Final path is never confirmed to stay inside the folder.",1],["Result","A file outside the folder is returned."]],
+  where:[
+    {surface:"File Download Endpoints",desc:"Endpoints that fetch or stream files from the local filesystem based on an input parameter.",ex:"GET /download?file=annual_report.pdf"},
+    {surface:"Image & Media Loaders",desc:"Scripts displaying images or avatars by filename.",ex:"GET /view-image?img=profile.png"},
+    {surface:"Template & Theme Selectors",desc:"Parameters that include HTML templates or skin files dynamically.",ex:"GET /index?template=dashboard.html"},
+    {surface:"Localization & Language Files",desc:"Language selection inputs that load JSON or XML locale dictionaries.",ex:"GET /app?lang=en_US.json"}
+  ],
+  exploitMech:{
+    summary:"User input is joined to a server base directory path without confirming that the resolved path remains inside the allowed folder. Directory navigation sequences allow the path to climb outward to the root filesystem.",
+    steps:[
+      {title:"Filename Parameter Submission",desc:"User sends path traversal sequences (../) within a file parameter."},
+      {title:"Path String Concatenation",desc:"The backend appends the input to a root storage folder (e.g., /var/www/uploads/ + input)."},
+      {title:"Filesystem Directory Ascendance",desc:"The operating system resolver navigates up the directory hierarchy for each ../ sequence until reaching the root."},
+      {title:"Arbitrary File Disclosure",desc:"The server reads and returns sensitive configuration files or source code from outside the web root."}
+    ]
+  },
+  payload:{
+    sample:"../../../../etc/passwd",
+    context:"Supplied to a file download or viewing parameter such as ?file= or ?doc=",
+    breakdown:[
+      {token:"../",role:"Parent Directory Operator",desc:"Instructs the filesystem to navigate up one level in the folder structure."},
+      {token:"../../../../",role:"Traversal Chain",desc:"Repeated sequences climb out of deeply nested web folders all the way to the filesystem root (/)." },
+      {token:"etc/passwd",role:"Target System File",desc:"Points to a known standard system file from the root to verify access."}
+    ],
+    intended:"/var/www/app/public/files/annual_report.pdf",
+    injected:"/var/www/app/public/files/../../../../etc/passwd  --> Resolves to: /etc/passwd",
+    transformNotes:"The relative path operators bypass the intended base folder boundary, resolving directly to the target system file.",
+    defenseNotes:"Resolve the path canonical form and verify it begins with the allowed directory: `resolved.startsWith(ALLOWED_DIR)`. Alternatively, use safe IDs mapped to a database table instead of passing filesystem names."
+  },
+  why:["Exposure of configuration files and secrets","Exposure of source code and logs","Information used for further attacks","In some cases, files can be overwritten"],
+  test:["Find features that load files by name: downloads, images, templates.","Think about how '..' and folder separators are handled.","Notice if the app shows file paths in errors.","Check whether different encodings of the same path are treated the same."],
+  prev:["Avoid using user input in file paths at all","Map safe IDs to files instead of using raw names","Allow only a list of known file names","Resolve the final path, then confirm it starts with the allowed folder","Run the app with limited file permissions"],
+  bad:"path = BASE + \"/\" + filename\nreturn read(path)",
+  good:"path = resolve(BASE + \"/\" + filename)\nif not path.startswith(BASE):\n    return 400\nreturn read(path)",
+  mist:["Only removing '..' once and calling it done","Checking the name before decoding it","Running the app with access to the whole disk"],
+  chk:[
+    ["What must be true about the final path?","It must still be inside the allowed base folder after being fully resolved."],
+    ["Why is a file ID better than a file name?","The user can't choose a path, only an item from the app's own list."],
+    ["What is the purpose of ../ in a path traversal payload?","It instructs the filesystem resolver to ascend one level up toward the root directory."]
+  ]
+},
+{
+  id:"bac",n:"Broken Access Control",cat:"Access control",lv:"High",fix:"Enforce permissions on the server",one:"Users can do or see things they should not be allowed to.",
+  analogy:"Like a building where the door to the staff area is unmarked rather than locked.",
+  what:"Broken Access Control means the application does not properly enforce what each user is allowed to do. IDOR is one type. Others include reaching admin pages or actions without the right role.",
+  how:[["Login","User proves who they are (authentication)."],["Request","User asks for a page or action."],["Weak rule","Server doesn't check permission, or only hides the button.",1],["Result","User reaches features meant for others."]],
+  where:[
+    {surface:"Administrative & Privileged Routes",desc:"Admin portals and console pages that rely on hidden UI links instead of server-side role checks.",ex:"GET /admin/dashboard, GET /manage/users"},
+    {surface:"State-Changing API Actions",desc:"Endpoints that perform critical operations (delete, reset, update) without validating permissions.",ex:"POST /api/user/delete, POST /api/config/backup"},
+    {surface:"Privilege Parameter Tampering",desc:"Profile update or registration endpoints accepting role attributes directly from user input (Mass Assignment).",ex:'PUT /api/user { "name": "Alice", "role": "admin" }'},
+    {surface:"HTTP Method Tampering",desc:"APIs where access control guards are applied to GET requests but omitted on POST, PUT, or DELETE verbs.",ex:"DELETE /api/posts/42 (when GET is restricted)"}
+  ],
+  exploitMech:{
+    summary:"The application verifies user identity (authentication) but fails to enforce permissions (authorization) on server endpoints, assuming users cannot access pages that are hidden from the user interface.",
+    steps:[
+      {title:"Identification of Privileged Endpoints",desc:"A standard user discovers privileged endpoints by reviewing client-side JavaScript or documentation."},
+      {title:"Direct Endpoint Request",desc:"The user sends requests directly to the privileged URL or API endpoint via address bar or HTTP client."},
+      {title:"Missing Authorization Barrier",desc:"The server confirms the user has a valid login session, but does not verify if their assigned role permits this action."},
+      {title:"Privilege Escalation",desc:"The server executes the administrative function or delivers privileged administrative data to a standard user."}
+    ]
+  },
+  payload:{
+    sample:"POST /api/users/promote with body { \"userId\": 105, \"role\": \"admin\" }",
+    context:"Submitting privileged actions or accessing restricted URLs directly, bypassing UI limitations",
+    breakdown:[
+      {token:"Direct Route Navigation",role:"Forced Browsing",desc:"Directly calling restricted routes (e.g., /admin) that are absent from the user's regular navigation menu."},
+      {token:'"role": "admin"',role:"Mass Assignment Tamper",desc:"Injecting unauthorized administrative attributes into profile update or registration payloads."},
+      {token:"HTTP Verb Substitution",role:"Method Tampering",desc:"Switching request methods (e.g. GET -> PUT/DELETE) to bypass verb-specific security filters."}
+    ],
+    intended:"if (session.user.role === 'admin') { allowAccess(); } else { return 403; }",
+    injected:"if (session.isAuthenticated) { allowAccess(); }  /* Flaw: checks login but forgets role check */",
+    transformNotes:"UI-level restrictions (like hiding an 'Admin' button) are bypassed because the server endpoint lacks an explicit role check.",
+    defenseNotes:"Enforce Role-Based Access Control (RBAC) on the server for every endpoint: `requireRole('admin')` middleware. Adopt a deny-by-default architecture and define strict input schemas."
+  },
+  why:["Regular users gain admin abilities","Data of other users or the company is exposed","Records can be changed or deleted without permission","Often the most common serious web issue"],
+  test:["Compare what each role (guest, user, admin) can see and do.","Ask whether hiding a button is the only thing blocking an action.","Check whether actions work when the page link is opened directly.","Check that every request, not just pages, is protected."],
+  prev:["Enforce permissions on the server for every request","Deny by default, then allow specific roles","Use one shared permission system, not scattered checks","Never rely on hidden links or client-side checks","Log and review denied access attempts"],
+  bad:"// Admin page\nreturn render(\"admin\")   // only the menu link is hidden",
+  good:"if session.role != \"admin\":\n    return 403\nreturn render(\"admin\")",
+  mist:["Hiding links instead of blocking access","Checking permissions on some endpoints only","Trusting a role value sent from the browser"],
+  chk:[
+    ["Authentication vs authorization?","Authentication proves who you are. Authorization decides what you may do."],
+    ["Is hiding a menu item access control?","No. The server must still refuse the request."],
+    ["How is Broken Access Control exploited without injection?","By forced browsing directly to restricted URLs (like /admin) or tampering with user role parameters in API requests when the server omits permission checks."]
+  ]
+},
+{
+  id:"xss",n:"Reflected XSS",cat:"Injection",lv:"Medium",fix:"Output encoding",one:"Input shown back on a page runs as script in the browser.",
+  analogy:"Like a mirror that doesn't just show your words but also carries out instructions you wrote on a note.",
+  what:"Reflected Cross-Site Scripting happens when the server puts input from a request into the response page without encoding it. The browser then treats that input as part of the page's code instead of plain text.",
+  how:[["Request","A link or form sends input to the app."],["Reflect","Server includes the input in the response page."],["No encoding","Browser reads the input as code.",1],["Result","Script runs as the victim, on the trusted site."]],
+  where:[
+    {surface:"Search Result Echoes",desc:"Search features that echo the query string back in the HTML response without encoding.",ex:"GET /search?q=query -> <h2>Results for: query</h2>"},
+    {surface:"Error & Notification Banners",desc:"URL parameters echoed into alert banners or error boxes.",ex:"GET /login?error=Invalid+username+admin"},
+    {surface:"Form Input Re-population",desc:"Forms that echo submitted values back into HTML attributes upon validation failure.",ex:'<input name="email" value="USER_INPUT">'},
+    {surface:"Echoed HTTP Request Headers",desc:"Referer or User-Agent headers reflected in status pages, error diagnostics, or internal logs.",ex:"Header: User-Agent: <script>..."}
+  ],
+  exploitMech:{
+    summary:"User input from an HTTP request is inserted into the immediate HTML response without context-aware output encoding. The victim's browser interprets the injected HTML tags as executable code.",
+    steps:[
+      {title:"Crafted Link Delivery",desc:"A link containing the payload in a query parameter is clicked by a user or loaded in a browser."},
+      {title:"Unencoded Server Reflection",desc:"The server includes the untrusted input directly in the HTML response without escaping special characters."},
+      {title:"Browser Parser Switch",desc:"The browser's HTML parser encounters <script> or event handlers and switches from rendering text to executing script."},
+      {title:"Execution in Trusted Origin",desc:"The script runs in the victim's session with full access to the page's DOM and cookies under the application's domain."}
+    ]
+  },
+  payload:{
+    sample:"<script>alert('XSS')<\/script>",
+    context:"Passed in a URL query parameter (e.g. ?q= or ?msg=) reflected directly in the HTML response",
+    breakdown:[
+      {token:'">',role:"Context Breakout",desc:"Closes the surrounding HTML attribute and tag if the input is reflected inside an attribute (e.g. <input value=\"...\">)."},
+      {token:"<script>",role:"Tag Injection",desc:"Tells the browser's HTML parser to transition into JavaScript parsing and compilation mode."},
+      {token:"alert('XSS')",role:"Diagnostic Function",desc:"A harmless JavaScript function that displays a popup, proving arbitrary code execution in training environments."},
+      {token:"onerror=",role:"Event Handler Trigger",desc:"Alternative vector (e.g. in <img src=x onerror=...>) that runs JavaScript if images fail, bypassing script tag filters."},
+      {token:"<\/script>",role:"Tag Closure",desc:"Restores normal HTML parsing flow, preventing rendering breakage on the rest of the page."}
+    ],
+    intended:"<div>Search results for: <b>laptop</b></div>",
+    injected:"<div>Search results for: <b><script>alert('XSS')<\/script></b></div>",
+    transformNotes:"The browser encounters unencoded markup brackets `< >`, treating them as genuine HTML/JS rather than literal text.",
+    defenseNotes:"Context-aware output encoding converts `<` to `&lt;` and `>` to `&gt;`. The browser renders `<script>alert('XSS')<\/script>` strictly as visible text and never executes it. Supplement with Content Security Policy (CSP)."
+  },
+  why:["Theft of session data or tokens","Actions performed as the victim","Fake content or login forms on a trusted page","Spread by sending a crafted link"],
+  test:["Find where text you send comes back on the page: search, errors, messages.","Notice whether special characters appear literally or change the page.","Check each place it appears: body text, attribute, or script area.","Remember the victim must open the crafted link."],
+  prev:["Encode output for where it is used (HTML, attribute, JavaScript, URL)","Use a framework that encodes output by default","Validate and limit input as an extra layer","Add a Content Security Policy","Set HttpOnly on session cookies"],
+  bad:"html = \"<p>Results for \" + input + \"</p>\"",
+  good:"html = \"<p>Results for \" + htmlEncode(input) + \"</p>\"",
+  mist:["Encoding for HTML when the value is placed inside JavaScript","Relying only on input filters","Turning off a framework's automatic encoding"],
+  chk:[
+    ["Why is it called reflected?","The input is sent back in the immediate response, not stored."],
+    ["Best primary defense?","Context-aware output encoding."],
+    ["In <script>alert('XSS')<\/script>, why is alert() used in security training?","It serves as a safe diagnostic proof-of-concept that visually demonstrates code execution in the user's browser without modifying system state."]
+  ]
+},
+{
+  id:"cmdi",n:"Command Injection",cat:"Injection",lv:"High",fix:"Avoid shell commands",one:"Input changes which system command runs on the server.",
+  analogy:"Like telling an assistant 'order lunch', and they also carry out the extra task you slipped into the same sentence.",
+  what:"Command Injection happens when an application passes user input to an operating system command. If the command is built as text, extra characters can add or change commands the server runs.",
+  how:[["Input","User supplies a value, such as a host name."],["Command built","App puts it inside a shell command string."],["Shell","Shell reads extra command characters in the input.",1],["Result","Server runs commands the developer never intended."]],
+  where:[
+    {surface:"Network Diagnostic Tools",desc:"Web tools that wrap system utilities such as ping, traceroute, nslookup, or whois.",ex:"POST /tools/ping with field: host=8.8.8.8"},
+    {surface:"File & Media Converters",desc:"Features that invoke command-line converters like ImageMagick, ffmpeg, or PDF renderers.",ex:"POST /convert with field: filename=doc.docx"},
+    {surface:"Backup & Compression Utilities",desc:"Web administrative buttons invoking tar, zip, or rsync commands.",ex:"GET /backup?archive=data.tar.gz"},
+    {surface:"System Maintenance Controls",desc:"Admin dashboards triggering shell scripts for service monitoring, logs, or disk checks.",ex:"POST /status with field: service=apache2"}
+  ],
+  exploitMech:{
+    summary:"User input is concatenated into an operating system command string and passed to a system shell. Shell command separator characters instruct the shell to run an injected second command with server privileges.",
+    steps:[
+      {title:"Input Ingestion with Shell Metacharacters",desc:"User supplies an input containing shell separators (such as ;, &&, or |) followed by a second command."},
+      {title:"Unsafe Command String Assembly",desc:"The application concatenates the input into a single shell command string (e.g., 'ping -c 1 ' + host)."},
+      {title:"Shell Metacharacter Interpretation",desc:"The shell interpreter treats the separator character as a command boundary, finishing the first command and starting the second."},
+      {title:"Arbitrary Command Execution",desc:"The operating system runs the injected command with the privileges of the web application server process."}
+    ]
+  },
+  payload:{
+    sample:"8.8.8.8; id",
+    context:"Supplied into a network test input or system tool field passed to a shell interpreter",
+    breakdown:[
+      {token:"8.8.8.8",role:"Valid Argument",desc:"Satisfies the primary command's parameter requirement so execution starts without immediate syntax errors."},
+      {token:";",role:"Command Separator",desc:"Tells the shell that the first command has terminated and the subsequent token is an independent new command to execute."},
+      {token:"id",role:"Diagnostic Command",desc:"A safe standard command that prints the current system user ID and group permissions, proving execution."},
+      {token:"&& (Alternative)",role:"Conditional Operator",desc:"Runs the second command only if the first command succeeds."},
+      {token:"| (Alternative)",role:"Pipe Operator",desc:"Redirects the output of the first command into the standard input of the injected command."}
+    ],
+    intended:"ping -c 1 8.8.8.8",
+    injected:"ping -c 1 8.8.8.8; id  --> Shell runs ping, then runs id",
+    transformNotes:"The shell parses the semicolon as a command delimiter, executing 'id' as a separate instruction with web server privileges.",
+    defenseNotes:"Pass arguments as discrete elements in an array directly to the executable without invoking a shell: `subprocess.run(['ping', '-c', '1', ip])`. Without a shell interpreter, `; id` is treated as a literal (invalid) host name argument, preventing injection."
+  },
+  why:["Running commands on the server","Reading or changing server files","Using the server to attack other systems","Possible full compromise of the host"],
+  test:["Look for features that seem to call system tools: ping, conversion, backups.","Think about which characters a shell treats as special.","Notice if output looks like raw tool output.","Observe differences in response time or output when input changes."],
+  prev:["Avoid system commands when a library can do the job","Pass arguments as a list, not one shell string","Allow-list valid input, such as IP addresses only","Run the app as a low-privilege user","Keep the server able to reach only what it needs"],
+  bad:"run_shell(\"ping -c 1 \" + input)",
+  good:"if not is_valid_ip(input): return 400\nrun([\"ping\", \"-c\", \"1\", input])  // no shell",
+  mist:["Blocking a short list of bad characters","Validating in the browser only","Running the web app as an administrator"],
+  chk:[
+    ["Why is a shell string risky?","The shell interprets special characters in the input as commands."],
+    ["Safer alternative?","Use a library, or run a fixed command with separate arguments and validated input."],
+    ["In 8.8.8.8; id, what role does the semicolon (;) play?","The semicolon is a shell command separator, which instructs the command interpreter to execute 'id' as an independent new command."]
+  ]
+}
+];
+
+const ORDER=["overview",...V.map(v=>v.id),"compare"];
+const DONE=new Set();try{JSON.parse(localStorage.getItem("wv-done")||"[]").forEach(x=>DONE.add(x))}catch(e){}
+const code=(t,c)=>`<div class="code ${c||""}" data-c="${esc(t)}">${esc(t)}<button class="cp">Copy</button></div>`;
+const list=(a,c)=>`<ul class="${c||""}">${a.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+const learnBar=id=>{const i=ORDER.indexOf(id),nx=ORDER[i+1];return `<div class="learn"><button data-learn="${id}" class="${DONE.has(id)?"on":""}">${DONE.has(id)?"Learned ✓":"Mark as learned"}</button>${nx?`<button class="nx" data-go="${nx}">Next topic →</button>`:""}</div>`};
+const title=id=>id=="overview"?"Overview":id=="compare"?"Compare and Review":V.find(v=>v.id==id).n;
+const IDX=[];
+
+function vuln(v){
+ IDX.push({s:v.id,t:v.n,x:(v.n+" "+v.what+" "+v.cat).toLowerCase()});
+ IDX.push({s:v.id,t:v.n+": Where to exploit",x:(v.n+" where exploit attack surface entry "+v.where.map(w=>w.surface+" "+w.ex).join(" ")).toLowerCase()});
+ IDX.push({s:v.id,t:v.n+": Exploit mechanism",x:(v.n+" how it works mechanism exploit steps "+v.exploitMech.summary).toLowerCase()});
+ IDX.push({s:v.id,t:v.n+": Payload anatomy",x:(v.n+" payload "+v.payload.sample+" "+v.payload.breakdown.map(b=>b.token+" "+b.role).join(" ")).toLowerCase()});
+ v.chk.forEach(c=>IDX.push({s:v.id,t:v.n+": "+c[0],x:(c[0]+" "+c[1]).toLowerCase()}));
+
+ return `<h1>${v.n}<span class="tag ${v.lv=="High"?"hi":"md"}">${v.lv} impact</span><span class="tag ct">${v.cat}</span></h1><p class="lead">${v.one}</p>
+ <div class="glance"><div>Category<b>${v.cat}</b></div><div>Impact<b>${v.lv}</b></div><div>Main defense<b>${v.fix}</b></div></div>
+ <div class="note key"><b>Think of it this way.</b> ${v.analogy}</div>
+ 
+ <h2>What is it?</h2>
+ <p>${v.what}</p>
+
+ <h2>Where you can exploit the vulnerability</h2>
+ <p class="lead" style="font-size:15px;margin-bottom:10px">Common attack surfaces and application entry points where this weakness occurs:</p>
+ <div class="entry-grid">
+  ${v.where.map(w=>`<div class="entry-card"><b><span>📍</span> ${esc(w.surface)}</b><p>${esc(w.desc)}</p><div class="entry-ex">Example: ${esc(w.ex)}</div></div>`).join("")}
+ </div>
+
+ <h2>How the exploit works</h2>
+ <p class="lead" style="font-size:15px;margin-bottom:10px">${esc(v.exploitMech.summary)}</p>
+ <div class="mech-steps">
+  ${v.exploitMech.steps.map((st,i)=>`<div class="mech-step"><div class="mech-num">${i+1}</div><div class="mech-body"><b>${esc(st.title)}</b><p>${esc(st.desc)}</p></div></div>`).join("")}
+ </div>
+ <div class="flow">${v.how.map(s=>`<div class="${s[2]?"x":""}"><b>${s[0]}</b>${s[1]}</div>`).join("")}</div>
+ <p style="font-size:14px;color:var(--mu);margin-bottom:18px">The core flaw happens in the red step: untrusted user input crosses system boundaries without validation or permission checks.</p>
+
+ <h2>What you put as payload</h2>
+ <p class="lead" style="font-size:15px;margin-bottom:10px">Educational test payload anatomy: examine the components of the payload and how each token manipulates the backend logic.</p>
+ <div class="payload-card">
+  <div class="payload-head"><b>Sample Educational Payload</b><span class="payload-tag">Diagnostic Syntax</span></div>
+  <div class="payload-display" data-c="${esc(v.payload.sample)}">${esc(v.payload.sample)}<button class="cp">Copy</button></div>
+  <div class="payload-context"><b>Input Context:</b> ${esc(v.payload.context)}</div>
+  
+  <h3 style="margin:16px 0 8px;font-size:15px">Payload Token Breakdown</h3>
+  <div class="wrapx">
+   <table class="token-table">
+    <thead><tr><th>Token / Component</th><th>Role in Exploit</th><th>Parser & Execution Effect</th></tr></thead>
+    <tbody>
+     ${v.payload.breakdown.map(b=>`<tr><td><code class="token-code">${esc(b.token)}</code></td><td><span class="token-role">${esc(b.role)}</span></td><td>${esc(b.desc)}</td></tr>`).join("")}
+    </tbody>
+   </table>
+  </div>
+
+  <div class="transform-box">
+   <div class="transform-title">Intended Backend Execution vs. Injected Execution</div>
+   <div style="font-size:13px;color:var(--mu);margin-bottom:4px">Intended structure:</div>
+   <div class="transform-code">${esc(v.payload.intended)}</div>
+   <div style="font-size:13px;color:var(--bad);margin:10px 0 4px;font-weight:600">Altered structure with payload:</div>
+   <div class="transform-code" style="color:#fecaca">${esc(v.payload.injected)}</div>
+   <p style="font-size:13px;color:var(--mu);margin-top:8px">${esc(v.payload.transformNotes)}</p>
+  </div>
+
+  <div class="neutral-box">
+   <b>How Defensive Controls Neutralize This Payload</b>
+   <p style="margin:0;font-size:14px">${esc(v.payload.defenseNotes)}</p>
+  </div>
+ </div>
+
+ <h2>Code patterns</h2>
+ <div class="tabs"><button data-t="bad" class="on">Unsafe pattern</button><button data-t="good">Safer pattern</button></div>
+ <div data-tp="bad">${code(v.bad,"bad")}</div><div data-tp="good" style="display:none">${code(v.good,"good")}</div>
+ 
+ <h2>Why is it dangerous?</h2><div class="card">${list(v.why,"chk risk")}</div>
+ <h2>What should a tester understand?</h2><div class="card">${list(v.test)}<p style="margin-top:8px">The goal is to understand where trust is missing, not to memorise tricks.</p></div>
+ <h2>How to prevent it</h2><div class="card">${list(v.prev,"chk")}</div>
+ <h2>Common mistakes</h2><div class="note">${list(v.mist)}</div>
+ <h2>Check yourself</h2>${v.chk.map(c=>`<details><summary>${c[0]}</summary><div>${c[1]}</div></details>`).join("")}${learnBar(v.id)}`
+}
+
+const P={
+ overview:()=>{
+  IDX.push({s:"overview",t:"Core ideas",x:"untrusted input server-side authorization least privilege attack surface payload entry points"});
+  return `<div class="hero">
+   <h1>Web Vulnerabilities</h1>
+   <p class="lead">Six critical web application security weaknesses. For each topic, explore exactly where it can be exploited, step-by-step how the exploit works, and what you put as payload.</p>
+   <button class="cta" data-go="sqli">Start with SQL Injection →</button>
+  </div>
+  <h2>Three Core Questions in Each Module</h2>
+  <div class="grid">
+   <div class="card">
+    <h3>📍 Where you can exploit it</h3>
+    <p>Discover real-world attack surfaces: input forms, query strings, API routes, and request headers.</p>
+   </div>
+   <div class="card">
+    <h3>⚙️ How the exploit works</h3>
+    <p>Trace the technical execution flow from untrusted input to parser confusion or missing authorization.</p>
+   </div>
+   <div class="card">
+    <h3>🧪 What you put as payload</h3>
+    <p>Deconstruct the anatomy of test payloads token by token and see how defenses neutralize them.</p>
+   </div>
+  </div>
+  <h2>Three Defensive Principles</h2>
+  <div class="grid">
+   <div class="card"><h3>Never trust input</h3><p>Anything from the user is untrusted: forms, URLs, headers, cookies, file names.</p></div>
+   <div class="card"><h3>Check on the server</h3><p>The browser can be changed by the user. Security checks must run on the server.</p></div>
+   <div class="card"><h3>Give the least access</h3><p>Users, database accounts, and the app itself should have only the permissions they need.</p></div>
+  </div>
+  <h2>Modules</h2>
+  <div class="grid">${V.map(v=>`<button class="card mod" data-go="${v.id}"><h3>${v.n}<span class="tag ${v.lv=="High"?"hi":"md"}">${v.lv}</span></h3><p>${v.one}</p></button>`).join("")}</div>
+  <div class="note" style="margin-top:20px">This module teaches security concepts for authorized training and secure software development. Always obtain authorized permission before testing.</div>`+learnBar("overview")
+ },
+ compare:()=>{
+  IDX.push({s:"compare",t:"Comparison table",x:"compare summary defenses impact attack surface payload"});
+  return `<h1>Compare and Review</h1><p class="lead">A complete summary matrix covering attack surfaces, mechanisms, payloads, and defenses.</p>
+  <div class="wrapx card">
+   <table>
+    <tr>
+     <th>Vulnerability</th>
+     <th>Where to Exploit (Attack Surface)</th>
+     <th>How the Exploit Works</th>
+     <th>What You Put as Payload</th>
+     <th>Main Defense</th>
+     <th>Impact</th>
+    </tr>
+    ${V.map(v=>`<tr>
+     <td><b>${v.n}</b></td>
+     <td>${esc(v.where[0].surface + ", " + v.where[1].surface)}</td>
+     <td>${esc(v.exploitMech.steps[2].desc)}</td>
+     <td><code class="token-code">${esc(v.payload.sample)}</code></td>
+     <td>${v.fix}</td>
+     <td><span class="tag ${v.lv=="High"?"hi":"md"}">${v.lv}</span></td>
+    </tr>`).join("")}
+   </table>
+  </div>
+  <h2>Which control stops which problem?</h2>
+  <div class="grid">
+   <div class="card"><h3>Separate data from code</h3><p>Parameterized queries stop SQL Injection. Argument lists stop Command Injection. Output encoding stops XSS.</p></div>
+   <div class="card"><h3>Check who is asking</h3><p>Ownership and role checks on the server stop IDOR and Broken Access Control.</p></div>
+   <div class="card"><h3>Confine the resource</h3><p>Resolving and checking canonical paths stops Path Traversal.</p></div>
+  </div>`+learnBar("compare")
+ }
+};
+
+V.forEach(v=>P[v.id]=()=>vuln(v));
+
+function render(){
+ $("#main").innerHTML=ORDER.map(i=>`<section id="s-${i}">${P[i]()}</section>`).join("");
+ $("#nav").innerHTML=ORDER.map(i=>`<button data-go="${i}" id="n-${i}">${title(i)}<span class="ck">✓</span></button>`).join("");
+}
+
+function prog(){
+ const n=ORDER.filter(i=>DONE.has(i)).length;
+ $("#pt").textContent=n+" of "+ORDER.length+" learned";
+ $("#pb").style.width=n/ORDER.length*100+"%";
+ ORDER.forEach(i=>$("#n-"+i).classList.toggle("done",DONE.has(i)));
+}
+
+function go(id){
+ if(!document.getElementById("s-"+id))id="overview";
+ document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id=="s-"+id));
+ ORDER.forEach(i=>$("#n-"+i).classList.toggle("on",i==id));
+ $("#side").classList.remove("open");
+ window.scrollTo(0,0);
+ try{history.replaceState(null,"","#"+id)}catch(e){}
+}
+
+render();
+prog();
+
+document.addEventListener("click",e=>{
+ const t=e.target;let b;
+ if(b=t.closest("[data-go]"))return go(b.dataset.go);
+ if(b=t.closest("[data-learn]")){
+  const k=b.dataset.learn;
+  DONE.has(k)?DONE.delete(k):DONE.add(k);
+  try{localStorage.setItem("wv-done",JSON.stringify([...DONE]))}catch(x){}
+  b.classList.toggle("on",DONE.has(k));
+  b.textContent=DONE.has(k)?"Learned ✓":"Mark as learned";
+  return prog();
+ }
+ if(b=t.closest(".cp")){
+  const txt=b.parentElement.dataset.c;
+  const ok=()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1200)};
+  const fb=()=>{const a=document.createElement("textarea");a.value=txt;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(x){}a.remove()};
+  try{navigator.clipboard.writeText(txt).then(ok,fb)}catch(x){fb()}
+  return;
+ }
+ if(b=t.closest("[data-t]")){
+  const sec=b.closest("section");
+  sec.querySelectorAll("[data-t]").forEach(x=>x.classList.toggle("on",x==b));
+  sec.querySelectorAll("[data-tp]").forEach(p=>p.style.display=p.dataset.tp==b.dataset.t?"":"none");
+  return;
+ }
+ if(b=t.closest("[data-r]")){
+  go(b.dataset.r);
+  $("#q").value="";
+  $("#res").style.display="none";
+ }
+});
+
+$("#menu").onclick=()=>$("#side").classList.toggle("open");
+
+$("#q").addEventListener("input",e=>{
+ const v=e.target.value.trim().toLowerCase(),r=$("#res");
+ if(!v){r.style.display="none";return}
+ const m=IDX.filter(x=>x.x.includes(v)).slice(0,8);
+ r.innerHTML=m.length?m.map(x=>`<button data-r="${x.s}">${esc(x.t)}<small>${title(x.s)}</small></button>`).join(""):"<button disabled>No match. Try a shorter term.</button>";
+ r.style.display="block";
+});
+
+// Ambient Cyber Spotlight (Cursor Follower)
+const spotEl=$("#cyber-spotlight"),spotBtn=$("#spot-btn"),spotSt=$("#spot-st");
+let spotEnabled=localStorage.getItem("wv-spotlight")!=="off";
+function setSpot(on){
+ spotEnabled=on;
+ if(spotEl)spotEl.classList.toggle("off",!on);
+ if(spotBtn)spotBtn.classList.toggle("on",on);
+ if(spotSt)spotSt.textContent=on?"ON":"OFF";
+ try{localStorage.setItem("wv-spotlight",on?"on":"off")}catch(e){}
+}
+setSpot(spotEnabled);
+if(spotBtn)spotBtn.onclick=()=>setSpot(!spotEnabled);
+
+let smx=-600,smy=-600,spotTicking=false;
+const updateSpot=()=>{
+ document.documentElement.style.setProperty("--mouse-x",`${smx}px`);
+ document.documentElement.style.setProperty("--mouse-y",`${smy}px`);
+ spotTicking=false;
+};
+window.addEventListener("pointermove",e=>{
+ if(!spotEnabled)return;
+ smx=e.clientX;
+ smy=e.clientY;
+ if(!spotTicking){
+  requestAnimationFrame(updateSpot);
+  spotTicking=true;
+ }
+},{passive:true});
+
+window.addEventListener("pointerleave",()=>{
+ smx=-600;smy=-600;
+ if(!spotTicking){
+  requestAnimationFrame(updateSpot);
+  spotTicking=true;
+ }
+},{passive:true});
+
+go((location.hash||"#overview").slice(1));
+</script>
+</body>
+</html>
