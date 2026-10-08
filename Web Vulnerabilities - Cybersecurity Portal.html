@@ -5,9 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Web Vulnerabilities - Cybersecurity Portal</title>
 <style>
-:root{--bg:#070d1a;--panel:#0d1730;--p2:#12203f;--line:#1f3158;--cy:#22d3ee;--tx:#e8eef9;--mu:#8ea2c4;--ok:#34d399;--warn:#fbbf24;--bad:#f87171;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#070d1a;--panel:#0d1730;--p2:#12203f;--line:#1f3158;--cy:#22d3ee;--tx:#e8eef9;--mu:#8ea2c4;--ok:#34d399;--warn:#fbbf24;--bad:#f87171;--gold:#f59e0b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:70px}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.65 Inter,Manrope,system-ui,-apple-system,"Segoe UI",sans-serif}
+body{
+  margin:0;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(rgba(34,211,238,0.06) 1px, transparent 1px),
+    linear-gradient(to right, rgba(31,49,88,0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(31,49,88,0.2) 1px, transparent 1px);
+  background-size:28px 28px, 56px 56px, 56px 56px;
+  background-position:0 0, 0 0, 0 0;
+  color:var(--tx);
+  font:16px/1.65 Inter,Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
 button{font:inherit;color:inherit;cursor:pointer}:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
 #side{position:fixed;inset:0 auto 0 0;width:270px;background:var(--panel);border-right:1px solid var(--line);padding:calc(18px + env(safe-area-inset-top,0px)) 14px 18px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;z-index:20;transition:transform .2s}
 .brand b{display:block;font-size:17px;letter-spacing:.04em}.brand span{color:var(--mu);font-size:13px}
@@ -18,7 +29,11 @@ nav{display:flex;flex-direction:column;gap:2px}
 nav button{display:flex;align-items:center;gap:8px;background:none;border:0;border-left:3px solid transparent;padding:9px 10px;border-radius:0 8px 8px 0;text-align:left;color:var(--mu);transition:background .15s,color .15s}
 nav button:hover{background:var(--p2);color:var(--tx)}nav button.on{background:var(--p2);color:var(--tx);border-left-color:var(--cy)}
 nav .ck{margin-left:auto;color:var(--ok);font-size:13px;opacity:0}nav button.done .ck{opacity:1}
-.prog{margin-top:auto;font-size:13px;color:var(--mu)}.bar{height:6px;background:var(--bg);border-radius:6px;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--cy);transition:width .3s}
+.prog{margin-top:auto;font-size:13px;color:var(--mu)}
+.bar{height:6px;background:var(--bg);border-radius:6px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--cy);transition:width .3s}
+.bar.done i{background:linear-gradient(90deg,var(--ok),var(--cy))}
+#cert-btn{display:none;margin-top:10px;background:linear-gradient(135deg,rgba(52,211,153,0.15),rgba(34,211,238,0.15));border:1px solid var(--ok);color:var(--ok);border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:700;width:100%;text-align:center;animation:pulse-badge 2s infinite}
 #top{display:none;position:fixed;top:0;left:0;right:0;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;background:var(--panel);border-bottom:1px solid var(--line);z-index:15;align-items:center;gap:12px}
 #top button{background:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px}
 main{margin-left:270px;padding:36px clamp(16px,4vw,56px) 80px;max-width:1060px}
@@ -26,36 +41,55 @@ section{display:none}section.on{display:block}
 h1{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:0 0 10px;letter-spacing:-.02em}h2{font-size:21px;margin:34px 0 12px}h3{font-size:16px;margin:0 0 6px}
 p{margin:0 0 10px;max-width:70ch}.lead{color:var(--mu);font-size:17px;max-width:62ch}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}.card p,.card li{color:var(--mu);font-size:14.5px}.card p{margin:0 0 8px}
-.hero{background:linear-gradient(135deg,var(--p2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:clamp(20px,4vw,40px)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;transition:border-color .2s,box-shadow .2s,transform .15s}
+.card:hover{border-color:rgba(34,211,238,0.45);box-shadow:0 6px 20px -4px rgba(34,211,238,0.08)}
+.card p,.card li{color:var(--mu);font-size:14.5px}.card p{margin:0 0 8px}
+.hero{background:linear-gradient(135deg,var(--p2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:clamp(20px,4vw,40px);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;top:-50%;right:-20%;width:300px;height:300px;background:radial-gradient(circle,rgba(34,211,238,0.15),transparent 70%);pointer-events:none}
 .cta{background:var(--cy);color:#04202a;border:0;border-radius:10px;padding:11px 20px;font-weight:700;margin-top:10px}.cta:hover{filter:brightness(1.1)}
 .mod{text-align:left;transition:border-color .15s}.mod:hover{border-color:var(--cy)}
-.tag{font-size:12px;padding:2px 9px;border-radius:999px;border:1px solid;margin-left:6px;white-space:nowrap;vertical-align:middle}
-.hi{border-color:var(--bad);color:var(--bad)}.md{border-color:var(--warn);color:var(--warn)}.ct{border-color:var(--cy);color:var(--cy)}
+
+/* Badges with pulsing status dots */
+.tag{font-size:12px;padding:3px 10px;border-radius:999px;border:1px solid;margin-left:6px;white-space:nowrap;vertical-align:middle;display:inline-flex;align-items:center;gap:6px}
+.hi{border-color:rgba(248,113,113,0.5);color:var(--bad);background:rgba(248,113,113,0.08)}
+.hi::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--bad);animation:pulse-bad 1.8s infinite}
+.md{border-color:rgba(251,191,36,0.5);color:var(--warn);background:rgba(251,191,36,0.08)}
+.md::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--warn);animation:pulse-warn 2.2s infinite}
+.ct{border-color:rgba(34,211,238,0.4);color:var(--cy);background:rgba(34,211,238,0.08)}
+@keyframes pulse-bad{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(1.3)}}
+@keyframes pulse-warn{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(1.3)}}
+@keyframes pulse-badge{0%,100%{box-shadow:0 0 10px rgba(52,211,153,0.2)}50%{box-shadow:0 0 20px rgba(52,211,153,0.4)}}
+
 .glance{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:16px 0}
 .glance div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--mu)}.glance b{display:block;color:var(--tx);font-size:15px}
 .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:6px 0 12px}
 .flow div{flex:1 1 150px;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--cy);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--mu)}.flow b{color:var(--tx);display:block;font-size:13px}
 .flow div.x{border-top-color:var(--bad)}
-.code{position:relative;background:#050a14;border:1px solid var(--line);border-radius:8px;padding:10px 70px 10px 12px;font:13.5px/1.55 ui-monospace,"SF Mono",Menlo,Consolas,monospace;overflow-x:auto;white-space:pre}
+
+/* Code blocks with syntax colors */
+.code{position:relative;background:#050a14;border:1px solid var(--line);border-radius:8px;padding:12px 70px 12px 14px;font:13.5px/1.55 ui-monospace,"SF Mono",Menlo,Consolas,monospace;overflow-x:auto;white-space:pre}
 .code.bad{border-left:3px solid var(--bad);color:#fecaca}.code.good{border-left:3px solid var(--ok);color:#a7f3d0}
 .cp{position:absolute;right:6px;top:6px;background:var(--p2);border:1px solid var(--line);border-radius:6px;padding:2px 9px;font-size:12px;color:var(--tx)}.cp:hover{border-color:var(--cy)}
+.syn-kw{color:#c084fc;font-weight:600}
+.syn-str{color:#fde047}
+.syn-num{color:#34d399}
+.syn-com{color:#64748b;font-style:italic}
+.syn-fn{color:#38bdf8}
+
 .tabs{display:flex;gap:6px;margin:10px 0 8px}.tabs button{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 14px;font-size:14px;color:var(--mu)}.tabs button.on{border-color:var(--cy);color:var(--tx);background:var(--p2)}
 ul{margin:0 0 8px;padding-left:20px;color:var(--mu);font-size:15px}li{margin-bottom:4px}
 .chk li{list-style:none;margin-left:-20px;padding-left:26px;position:relative}.chk li::before{content:"✓";position:absolute;left:4px;color:var(--ok)}
 .risk li::before{content:"!";color:var(--bad);font-weight:700}
 .note{border-left:3px solid var(--warn);background:var(--panel);padding:10px 14px;border-radius:0 8px 8px 0;font-size:14.5px;color:var(--mu);margin:12px 0}
 .key{border-left-color:var(--cy)}
-details{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
-summary{padding:12px 16px;cursor:pointer;font-weight:600;list-style:none;display:flex;gap:10px}summary::-webkit-details-marker{display:none}summary::after{content:"+";margin-left:auto;color:var(--cy)}details[open] summary::after{content:"–"}
-details>div{padding:0 16px 12px;color:var(--mu);font-size:15px}
 .wrapx{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:620px}th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;color:var(--mu)}th{color:var(--tx)}td:first-child{color:var(--cy);font-weight:600;white-space:nowrap}
 .learn{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap}
 .learn button{background:none;border:1px solid var(--ok);color:var(--ok);border-radius:10px;padding:9px 18px;font-weight:600}.learn button.on{background:var(--ok);color:#04201a}.learn .nx{border-color:var(--line);color:var(--mu)}
 
 /* Entry Points & Attack Surface */
 .entry-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:12px 0 22px}
-.entry-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.entry-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px;transition:border-color .2s,box-shadow .2s}
+.entry-card:hover{border-color:rgba(34,211,238,0.4);box-shadow:0 4px 16px -2px rgba(34,211,238,0.08)}
 .entry-card b{color:var(--tx);font-size:14.5px;display:flex;align-items:center;gap:6px}
 .entry-card p{color:var(--mu);font-size:13.5px;margin:0}
 .entry-ex{margin-top:auto;padding-top:8px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;color:var(--cy);background:#050a14;padding:6px 10px;border-radius:6px;border:1px solid var(--line);overflow-x:auto;white-space:nowrap}
@@ -85,6 +119,73 @@ details>div{padding:0 16px 12px;color:var(--mu);font-size:15px}
 .transform-code{font:13px/1.5 ui-monospace,"SF Mono",Menlo,Consolas,monospace;color:var(--tx);white-space:pre-wrap;word-break:break-word}
 .neutral-box{background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.25);border-radius:8px;padding:12px 14px;margin-top:14px;font-size:14px;color:var(--tx)}
 .neutral-box b{color:var(--ok);display:block;margin-bottom:4px;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+
+/* Interactive Simulator Lab */
+.sim-panel{background:linear-gradient(145deg,rgba(18,32,63,0.7),rgba(13,23,48,0.9));border:1px solid rgba(34,211,238,0.3);border-radius:14px;padding:20px;margin:16px 0 28px;position:relative}
+.sim-panel::before{content:"LAB SIMULATOR";position:absolute;top:-10px;left:18px;background:var(--cy);color:#04202a;font-size:10.5px;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:4px}
+.sim-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.sim-head h3{margin:0;font-size:17px;color:var(--tx);display:flex;align-items:center;gap:6px}
+.sim-head p{font-size:13.5px;color:var(--mu);margin:3px 0 0}
+.sim-controls{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px}
+.sim-field{flex:1 1 200px}
+.sim-field label{display:block;font-size:12.5px;color:var(--mu);margin-bottom:4px;font-weight:600}
+.sim-input{width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:#050a14;color:var(--tx);font:13.5px ui-monospace,monospace}
+.sim-input:focus{outline:none;border-color:var(--cy);box-shadow:0 0 10px rgba(34,211,238,0.2)}
+.sim-presets{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center}
+.sim-preset-btn{background:var(--p2);border:1px solid var(--line);border-radius:6px;padding:3px 8px;font-size:11.5px;color:var(--cy);cursor:pointer;transition:background .15s}
+.sim-preset-btn:hover{background:rgba(34,211,238,0.15);border-color:var(--cy)}
+.sim-mode-bar{display:flex;gap:8px;margin:12px 0}
+.sim-mode-btn{flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--p2);color:var(--mu);font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s}
+.sim-mode-btn.on.bad{border-color:var(--bad);color:var(--bad);background:rgba(248,113,113,0.12)}
+.sim-mode-btn.on.good{border-color:var(--ok);color:var(--ok);background:rgba(52,211,153,0.12)}
+.sim-live{background:#050a14;border:1px solid var(--line);border-radius:8px;padding:12px;margin:12px 0;font:13px/1.5 ui-monospace,monospace}
+.sim-run-btn{background:var(--cy);color:#04202a;border:0;border-radius:8px;padding:10px 20px;font-weight:700;font-size:13.5px;cursor:pointer;transition:filter .15s}
+.sim-run-btn:hover{filter:brightness(1.15)}
+.sim-result{margin-top:12px;padding:14px;border-radius:8px;border:1px solid;font-size:13.5px;display:none;white-space:pre-wrap;line-height:1.6}
+.sim-result.bad{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.5);color:#fecaca}
+.sim-result.good{background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.5);color:#a7f3d0}
+
+/* Gamified Interactive Quiz */
+.quiz-box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin:16px 0 24px}
+.quiz-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.quiz-head b{font-size:16px;color:var(--tx)}
+.quiz-score{font-size:12px;padding:3px 10px;border-radius:999px;background:var(--p2);border:1px solid var(--line);color:var(--cy);font-weight:600}
+.quiz-item{background:#050a14;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:12px}
+.quiz-q{font-weight:600;font-size:14.5px;color:var(--tx);margin-bottom:12px}
+.quiz-opts{display:flex;flex-direction:column;gap:8px}
+.quiz-opt{background:var(--p2);border:1px solid var(--line);border-radius:8px;padding:10px 14px;text-align:left;font-size:13.5px;color:var(--tx);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px}
+.quiz-opt:hover:not(.locked){border-color:var(--cy);background:rgba(34,211,238,0.06)}
+.quiz-opt.correct{border-color:var(--ok);background:rgba(52,211,153,0.12);color:var(--ok);font-weight:600}
+.quiz-opt.wrong{border-color:var(--bad);background:rgba(248,113,113,0.12);color:var(--bad)}
+.quiz-exp{margin-top:10px;padding:10px 12px;background:rgba(34,211,238,0.05);border-left:3px solid var(--cy);border-radius:0 6px 6px 0;font-size:13px;color:var(--mu);display:none}
+
+/* Certificate Modal */
+#cert-modal{display:none;position:fixed;inset:0;background:rgba(4,9,20,0.85);backdrop-filter:blur(8px);z-index:100;align-items:center;justify-content:center;padding:20px}
+#cert-modal.open{display:flex}
+.cert-card{background:linear-gradient(145deg,#0d1730,#070d1a);border:2px solid var(--cy);border-radius:16px;max-width:680px;width:100%;padding:32px 28px;box-shadow:0 0 50px rgba(34,211,238,0.25);position:relative;text-align:center}
+.cert-card::before{content:"★ ★ ★";position:absolute;top:16px;left:50%;transform:translateX(-50%);color:var(--gold);font-size:14px;letter-spacing:.3em}
+.cert-card h2{font-size:22px;color:var(--cy);margin:20px 0 4px;letter-spacing:.06em;text-transform:uppercase}
+.cert-sub{font-size:13px;color:var(--mu);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px}
+.cert-for{font-size:14px;color:var(--mu)}
+.cert-name-input{background:none;border:0;border-bottom:2px dashed var(--cy);color:var(--tx);font-size:24px;font-weight:700;text-align:center;padding:4px 8px;margin:8px auto 14px;display:block;max-width:340px;outline:none}
+.cert-desc{font-size:14px;color:var(--tx);max-width:480px;margin:0 auto 16px}
+.cert-skills{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:16px 0}
+.cert-skill-pill{background:var(--p2);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:11.5px;color:var(--ok)}
+.cert-meta{display:flex;justify-content:space-around;border-top:1px solid var(--line);padding-top:14px;margin-top:18px;font-size:12px;color:var(--mu)}
+.cert-meta b{color:var(--tx);display:block}
+.cert-actions{display:flex;gap:10px;justify-content:center;margin-top:20px}
+.cert-actions button{padding:9px 18px;border-radius:8px;font-size:13.5px;font-weight:600}
+.btn-print{background:var(--cy);color:#04202a;border:0}.btn-print:hover{filter:brightness(1.1)}
+.btn-close{background:none;border:1px solid var(--line);color:var(--mu)}.btn-close:hover{border-color:var(--cy);color:var(--tx)}
+
+@media print{
+ body *{visibility:hidden}
+ #cert-modal, #cert-modal *{visibility:visible}
+ #cert-modal{position:absolute;left:0;top:0;width:100%;height:100%;background:white;color:black;display:block!important;padding:0}
+ .cert-card{border:2px solid #000;box-shadow:none;background:white;color:black;max-width:100%;padding:40px}
+ .cert-name-input{color:black;border-bottom-color:#000}
+ .cert-actions{display:none}
+}
 
 /* Ambient Cyber Spotlight Glow */
 #cyber-spotlight{
@@ -143,12 +244,55 @@ details>div{padding:0 16px 12px;color:var(--mu);font-size:15px}
  <div id="res"></div><nav id="nav"></nav>
  <div class="prog">
   <span id="pt"></span><div class="bar"><i id="pb"></i></div>
+  <button id="cert-btn">🎓 View Certificate</button>
   <button id="spot-btn" class="spotlight-btn on" title="Toggle cyber cursor spotlight"><span>✨ Cyber Glow</span><b id="spot-st">ON</b></button>
  </div>
 </aside>
 <main id="main"></main>
+
+<!-- Certificate Modal -->
+<div id="cert-modal" role="dialog" aria-modal="true" aria-label="Certificate of Completion">
+ <div class="cert-card">
+  <h2>Certificate of Completion</h2>
+  <div class="cert-sub">Web Application Security & Vulnerability Defense</div>
+  <p class="cert-for">This is proudly presented to:</p>
+  <input type="text" id="cert-name" class="cert-name-input" value="Security Scholar" aria-label="Student name">
+  <p class="cert-desc">For demonstrating successful understanding of vulnerability discovery, attack surface analysis, payload mechanics, and defensive engineering across six core web security domains.</p>
+  <div class="cert-skills">
+   <span class="cert-skill-pill">🛡️ SQL Injection Defense</span>
+   <span class="cert-skill-pill">🛡️ IDOR Authorization Guards</span>
+   <span class="cert-skill-pill">🛡️ Path Traversal Mitigation</span>
+   <span class="cert-skill-pill">🛡️ Server-Side RBAC Access Control</span>
+   <span class="cert-skill-pill">🛡️ Reflected XSS Entity Encoding</span>
+   <span class="cert-skill-pill">🛡️ Command Injection Parameterization</span>
+  </div>
+  <div class="cert-meta">
+   <div><b>ISSUED DATE</b><span id="cert-date"></span></div>
+   <div><b>VERIFICATION ID</b><span>CYBER-WV-89214</span></div>
+   <div><b>ACADEMY STATUS</b><span style="color:var(--ok)">VERIFIED PASS ✓</span></div>
+  </div>
+  <div class="cert-actions">
+   <button class="btn-print" id="btn-cert-print">🖨️ Print / Save PDF</button>
+   <button class="btn-close" id="btn-cert-close">Close</button>
+  </div>
+ </div>
+</div>
+
 <script>
 const $=s=>document.querySelector(s),esc=s=>(s!=null?String(s):"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+
+// Lightweight syntax highlighter for code snippets
+function highlightCode(codeStr){
+ if(!codeStr)return"";
+ let s=esc(codeStr);
+ s=s.replace(/(&quot;.*?&quot;|&#39;.*?&#39;|".*?"|'.*?')/g,'<span class="syn-str">$1</span>');
+ s=s.replace(/(\/{2}.*$|--.*$|\/\*[\s\S]*?\*\/)/gm,'<span class="syn-com">$1</span>');
+ s=s.replace(/\b(SELECT|FROM|WHERE|AND|OR|INSERT|UPDATE|DELETE|JOIN|LIMIT|ORDER BY|GROUP BY|DROP|TABLE|VALUES|const|let|var|function|return|if|else|import|export|true|false|null|try|catch|resolve|startswith)\b/g,'<span class="syn-kw">$1</span>');
+ s=s.replace(/\b(\d{1,4})\b/g,'<span class="syn-num">$1</span>');
+ s=s.replace(/\b(alert|run|read|get|render|htmlEncode|is_valid_ip|run_shell|Popen|execute)\b(?=\()/g,'<span class="syn-fn">$1</span>');
+ return s;
+}
+
 const V=[
 {
   id:"sqli",n:"SQL Injection",cat:"Injection",lv:"High",fix:"Parameterized queries",one:"Input changes the meaning of a database query.",
@@ -183,6 +327,50 @@ const V=[
     transformNotes:"Because '1'='1' is always TRUE and trailing checks are commented out, the query matches records regardless of password.",
     defenseNotes:"Parameterized queries (prepared statements) pass the entire payload strictly as literal data. The database searches for a user whose literal username matches that exact text string, completely neutralizing the injection."
   },
+  sim:{
+    title:"SQL Injection Interactive Lab",
+    desc:"Test how username and password inputs are processed under unsafe concatenation versus parameterized queries.",
+    f1:{label:"Username input",val:"admin",preset:"' OR '1'='1' -- "},
+    f2:{label:"Password input",val:"pass123",preset:"any_password"},
+    buildQuery:(u,p,bad)=>bad?("SELECT * FROM users WHERE name = '" + u + "' AND pass = '" + p + "'"):("SELECT * FROM users WHERE name = ? AND pass = ?  /* params: [\"" + u + "\", \"" + p + "\"] */"),
+    run:(u,p,bad)=>{
+      if(bad){
+        if(u.includes("'")&&u.toLowerCase().includes("or")){
+          return{status:"bad",text:"🔓 AUTHENTICATION BYPASSED!\nThe condition '1'='1' evaluated to TRUE for every table row, and the password check was commented out.\n\n[DATABASE RESPONSE]:\nLogged in as: Administrator (ID: 1, Role: Superadmin, Email: admin@corp.internal)\nUser table records dumped: 12 accounts exposed."};
+        }
+        if(u==="admin"&&p==="pass123"){
+          return{status:"good",text:"✅ Valid Credentials: Normal login successful as admin."};
+        }
+        return{status:"bad",text:"❌ Login Failed: Invalid username or password (no injection payload matched)."};
+      }else{
+        return{status:"good",text:"🔒 QUERY SECURELY PARAMETERIZED!\nThe database engine treated the input strictly as literal text:\nLiteral search parameter: \"" + u + "\"\nNo user literally named \"" + u + "\" exists. Login rejected (401 Unauthorized). Injection prevented."};
+      }
+    }
+  },
+  quiz:[
+    {
+      q:"What is the fundamental root cause of SQL Injection?",
+      opts:[
+        "User input is concatenated into query strings as text rather than bound as parameters",
+        "The database port 3306 is not encrypted with SSL",
+        "The database table has too many active records",
+        "The web server is running on Linux instead of Windows"
+      ],
+      ans:0,
+      exp:"SQL Injection occurs when user input is stitched into SQL text, causing the SQL parser to interpret user characters as query instructions."
+    },
+    {
+      q:"In the payload ' OR '1'='1' -- , what is the role of the comment symbol (-- )?",
+      opts:[
+        "To speed up database response time",
+        "To tell the SQL engine to ignore trailing syntax or quotes in the developer's query",
+        "To encrypt the returned table columns",
+        "To delete the server query logs"
+      ],
+      ans:1,
+      exp:"The comment symbol tells the database parser to ignore the rest of the developer's query, avoiding syntax errors from leftover quotes."
+    }
+  ],
   why:["Reading data the user should never see","Bypassing login checks","Changing or deleting records","In serious cases, reaching the server itself"],
   test:["List every place input reaches a database: search, login, filters, sorting.","Notice if unexpected characters cause errors or change the results.","Compare normal responses with responses to unusual input.","Error messages that mention a database are a strong hint."],
   prev:["Use parameterized queries (prepared statements) everywhere","Use an ORM correctly, and avoid building raw query strings","Give the database account only the permissions it needs","Hide detailed database errors from users","Validate type and length of input as an extra layer"],
@@ -191,8 +379,7 @@ const V=[
   mist:["Thinking filtering a few characters is enough","Escaping by hand instead of using parameters","Showing raw database errors on the page"],
   chk:[
     ["What is the root cause of SQL Injection?","Input is joined into the query text, so it can be read as part of the query."],
-    ["What is the main fix?","Parameterized queries, which keep data separate from the query."],
-    ["In ' OR '1'='1' -- , what does the single quote (') do?","It closes the developer's opening single quote, breaking out of the string literal so subsequent characters are parsed as SQL commands."]
+    ["What is the main fix?","Parameterized queries, which keep data separate from the query."]
   ]
 },
 {
@@ -228,6 +415,45 @@ const V=[
     transformNotes:"Without an ownership predicate, the query retrieves the document regardless of which user is authenticated.",
     defenseNotes:"Enforce server-side authorization: `WHERE id = ? AND owner_id = ?`. If the authenticated user does not own the requested ID, return 403 Forbidden or 404 Not Found."
   },
+  sim:{
+    title:"IDOR Object Authorization Lab",
+    desc:"You are logged in as User #101 (Alice). Change the Invoice ID to test authorization checks.",
+    f1:{label:"Requested Invoice ID",val:"1001",preset:"1002"},
+    f2:{label:"Logged-in Session User",val:"User #101 (Alice)",preset:"User #101 (Alice)"},
+    buildQuery:(id,u,bad)=>bad?("GET /api/invoices/" + id + "  --> db.query(\"SELECT * FROM invoices WHERE id = " + id + "\")"):("GET /api/invoices/" + id + "  --> db.query(\"SELECT * FROM invoices WHERE id = " + id + " AND owner_id = 101\")"),
+    run:(id,u,bad)=>{
+      if(id==="1001")return{status:"good",text:"📄 Authorized: Alice viewing her own invoice #1001.\nAmount: $120.00 | Description: Monthly Hosting Plan."};
+      if(bad){
+        return{status:"bad",text:"🔓 IDOR VULNERABILITY CONFIRMED!\nServer returned invoice #" + id + " without verifying owner.\n\n[EXPOSED PRIVATE DATA]:\nOwner: Bob Miller (User #102)\nAmount: $9,450.00\nTax ID: US-99124-B\nBanking Routing: 021000021\nPersonal address and financial records leaked."};
+      }else{
+        return{status:"good",text:"🔒 403 FORBIDDEN - ACCESS BLOCKED!\nServer evaluated: invoice.owner (102) != session.user (101).\nUnauthorized cross-account query rejected. Security warning recorded."};
+      }
+    }
+  },
+  quiz:[
+    {
+      q:"Why is using long, random IDs (like UUIDs) not a complete defense against IDOR?",
+      opts:[
+        "Because UUIDs cannot be stored in modern databases",
+        "Because hiding or randomizing IDs makes guessing harder, but the server must still check authorization",
+        "Because UUIDs are automatically decrypted by browsers",
+        "Because UUIDs only work on mobile devices"
+      ],
+      ans:1,
+      exp:"Obscurity (random IDs) slows guessing, but if a link is shared or leaked, the server will still serve private data without explicit ownership checks."
+    },
+    {
+      q:"Where should the user identity be derived when verifying record ownership?",
+      opts:[
+        "From a hidden input field in the client HTML",
+        "From an unverified URL parameter like ?user_id=12",
+        "From the authenticated server session or verified token",
+        "From the browser localStorage without validation"
+      ],
+      ans:2,
+      exp:"The server must always derive the user's identity from a cryptographically verified session or token, never trusting client-supplied user IDs."
+    }
+  ],
   why:["Exposure of other users' personal data","Ability to change or delete other users' records","Easy to automate across many records","Often leads to large data leaks"],
   test:["Notice where requests contain identifiers (numbers, names, file IDs).","Ask what happens if another valid identifier is used by the same logged-in user.","Test with two accounts to see if one can reach the other's data.","Remember: hard-to-guess IDs do not replace permission checks."],
   prev:["Check on the server that the user owns or may access each object","Deny by default when no rule allows access","Take the user identity from the session, not from the request","Use unpredictable IDs only as an extra layer","Log repeated access to records the user doesn't own"],
@@ -236,8 +462,7 @@ const V=[
   mist:["Assuming hidden or long IDs are secret enough","Checking only that the user is logged in","Trusting a user ID sent by the browser"],
   chk:[
     ["Is a random-looking ID a fix for IDOR?","No. It makes guessing harder, but the server must still check permission."],
-    ["What should the server compare?","The owner of the object against the logged-in user."],
-    ["Where is an IDOR payload placed?","In URL query parameters, REST path segments, hidden form fields, or API request bodies referencing object IDs."]
+    ["What should the server compare?","The owner of the object against the logged-in user."]
   ]
 },
 {
@@ -273,6 +498,45 @@ const V=[
     transformNotes:"The relative path operators bypass the intended base folder boundary, resolving directly to the target system file.",
     defenseNotes:"Resolve the path canonical form and verify it begins with the allowed directory: `resolved.startsWith(ALLOWED_DIR)`. Alternatively, use safe IDs mapped to a database table instead of passing filesystem names."
   },
+  sim:{
+    title:"Path Traversal Directory Resolution Lab",
+    desc:"The app is configured with storage folder '/var/www/uploads/'. Test relative traversal input.",
+    f1:{label:"Requested file name",val:"report.pdf",preset:"../../../../etc/passwd"},
+    f2:{label:"Configured base folder",val:"/var/www/uploads/",preset:"/var/www/uploads/"},
+    buildQuery:(f,b,bad)=>"path = \"" + b + "\" + \"" + f + "\"\nresolved = path.resolve(path) --> " + (f.includes("..") ? "/etc/passwd" : ("/var/www/uploads/" + f)),
+    run:(f,b,bad)=>{
+      if(!f.includes(".."))return{status:"good",text:"📄 File Loaded Successfully: /var/www/uploads/" + f + " (Size: 42 KB).\nPath stayed safely within designated folder."};
+      if(bad){
+        return{status:"bad",text:"🔓 PATH TRAVERSAL SUCCESSFUL!\nFilesystem traversed outside document root.\nResolved Path: /etc/passwd\n\n[SYSTEM FILE LEAKED]:\nroot:x:0:0:root:/root:/bin/bash\ndaemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin\nwww-data:x:33:33:www-data:/var/www:/bin/sh\nSystem user accounts exposed."};
+      }else{
+        return{status:"good",text:"🔒 400 BAD REQUEST - TRAVERSAL BLOCKED!\nServer executed:\nconst resolved = path.resolve(BASE, input);\nif (!resolved.startsWith(BASE)) throw new SecurityException();\nResolved path '/etc/passwd' does not match allowed prefix '/var/www/uploads/'."};
+      }
+    }
+  },
+  quiz:[
+    {
+      q:"What does the sequence '../' do in an operating system filesystem path?",
+      opts:[
+        "Deletes the previous directory",
+        "Instructs the filesystem resolver to ascend one level to the parent directory",
+        "Encrypts the current folder contents",
+        "Creates a new subdirectory"
+      ],
+      ans:1,
+      exp:"In Unix/Linux and Windows filesystems, '..' represents the parent directory, allowing navigation up the directory tree."
+    },
+    {
+      q:"Why is removing '../' once with a simple replace string filter flawed?",
+      opts:[
+        "Because an attacker can supply nested sequences like '....//', which turn into '../' after a single pass",
+        "Because browsers do not support the character '.'",
+        "Because Linux ignores slashes",
+        "Because URLs cannot contain dots"
+      ],
+      ans:0,
+      exp:"Single-pass string removal of '../' from '....//' strips the inner '../', leaving another functional '../' behind. Path canonicalization is required."
+    }
+  ],
   why:["Exposure of configuration files and secrets","Exposure of source code and logs","Information used for further attacks","In some cases, files can be overwritten"],
   test:["Find features that load files by name: downloads, images, templates.","Think about how '..' and folder separators are handled.","Notice if the app shows file paths in errors.","Check whether different encodings of the same path are treated the same."],
   prev:["Avoid using user input in file paths at all","Map safe IDs to files instead of using raw names","Allow only a list of known file names","Resolve the final path, then confirm it starts with the allowed folder","Run the app with limited file permissions"],
@@ -281,8 +545,7 @@ const V=[
   mist:["Only removing '..' once and calling it done","Checking the name before decoding it","Running the app with access to the whole disk"],
   chk:[
     ["What must be true about the final path?","It must still be inside the allowed base folder after being fully resolved."],
-    ["Why is a file ID better than a file name?","The user can't choose a path, only an item from the app's own list."],
-    ["What is the purpose of ../ in a path traversal payload?","It instructs the filesystem resolver to ascend one level up toward the root directory."]
+    ["Why is a file ID better than a file name?","The user can't choose a path, only an item from the app's own list."]
   ]
 },
 {
@@ -318,6 +581,45 @@ const V=[
     transformNotes:"UI-level restrictions (like hiding an 'Admin' button) are bypassed because the server endpoint lacks an explicit role check.",
     defenseNotes:"Enforce Role-Based Access Control (RBAC) on the server for every endpoint: `requireRole('admin')` middleware. Adopt a deny-by-default architecture and define strict input schemas."
   },
+  sim:{
+    title:"Broken Access Control Forced Browsing Lab",
+    desc:"You are logged in with role 'MEMBER'. Test invoking privileged administrative endpoints.",
+    f1:{label:"Target endpoint to request",val:"/user/profile",preset:"/admin/console"},
+    f2:{label:"Active user session role",val:"MEMBER (Standard)",preset:"MEMBER (Standard)"},
+    buildQuery:(ep,r,bad)=>bad?("Request: GET " + ep + "  --> Server checks if user is logged in: OK! Render " + ep + "."):("Request: GET " + ep + "  --> Server runs: if (user.role !== 'ADMIN') return 403;"),
+    run:(ep,r,bad)=>{
+      if(ep==="/user/profile")return{status:"good",text:"✅ Authorized: Standard member profile rendered normally."};
+      if(bad){
+        return{status:"bad",text:"🔓 PRIVILEGE BYPASS CONFIRMED!\nStandard MEMBER bypassed UI restrictions via direct forced browsing.\n\n[ADMIN CONSOLE ACCESSED]:\nEndpoint: " + ep + "\nAdmin privileges: Full access granted\nUser Management: 84 accounts\nDatabase Backup: Triggered\nSystem settings unlocked."};
+      }else{
+        return{status:"good",text:"🔒 403 FORBIDDEN - ACCESS DENIED!\nServer-side RBAC guard intercepted request:\nRequired Role: 'ADMIN' | Session Role: 'MEMBER'\nEndpoint execution halted. Audit log updated."};
+      }
+    }
+  },
+  quiz:[
+    {
+      q:"What is the key difference between Authentication and Authorization?",
+      opts:[
+        "Authentication is for mobile apps, authorization is for desktop apps",
+        "Authentication verifies who you are; Authorization decides what permissions you possess",
+        "Authentication uses passwords; authorization uses encryption keys",
+        "There is no difference between the two terms"
+      ],
+      ans:1,
+      exp:"Authentication confirms user identity. Authorization enforces what actions that authenticated identity is permitted to execute."
+    },
+    {
+      q:"Why is hiding an 'Admin' button in CSS/HTML insufficient for access control?",
+      opts:[
+        "Because CSS does not work on all screens",
+        "Because any user can inspect the source code and send direct HTTP requests to the backend endpoint",
+        "Because buttons must always be clickable according to web standards",
+        "Because search engines will index the button"
+      ],
+      ans:1,
+      exp:"The client browser is entirely under user control. Hiding UI buttons does not prevent users from sending requests directly to API routes."
+    }
+  ],
   why:["Regular users gain admin abilities","Data of other users or the company is exposed","Records can be changed or deleted without permission","Often the most common serious web issue"],
   test:["Compare what each role (guest, user, admin) can see and do.","Ask whether hiding a button is the only thing blocking an action.","Check whether actions work when the page link is opened directly.","Check that every request, not just pages, is protected."],
   prev:["Enforce permissions on the server for every request","Deny by default, then allow specific roles","Use one shared permission system, not scattered checks","Never rely on hidden links or client-side checks","Log and review denied access attempts"],
@@ -326,8 +628,7 @@ const V=[
   mist:["Hiding links instead of blocking access","Checking permissions on some endpoints only","Trusting a role value sent from the browser"],
   chk:[
     ["Authentication vs authorization?","Authentication proves who you are. Authorization decides what you may do."],
-    ["Is hiding a menu item access control?","No. The server must still refuse the request."],
-    ["How is Broken Access Control exploited without injection?","By forced browsing directly to restricted URLs (like /admin) or tampering with user role parameters in API requests when the server omits permission checks."]
+    ["Is hiding a menu item access control?","No. The server must still refuse the request."]
   ]
 },
 {
@@ -365,6 +666,45 @@ const V=[
     transformNotes:"The browser encounters unencoded markup brackets `< >`, treating them as genuine HTML/JS rather than literal text.",
     defenseNotes:"Context-aware output encoding converts `<` to `&lt;` and `>` to `&gt;`. The browser renders `<script>alert('XSS')<\/script>` strictly as visible text and never executes it. Supplement with Content Security Policy (CSP)."
   },
+  sim:{
+    title:"Reflected XSS Sanitization Lab",
+    desc:"Enter search terms to observe the HTML response and simulate how the browser DOM processes markup.",
+    f1:{label:"Search query parameter (?q=)",val:"cybersecurity",preset:"<script>alert('XSS')<\/script>"},
+    f2:{label:"Page reflection area",val:"<h2>Results for: {q}</h2>",preset:"<h2>Results for: {q}</h2>"},
+    buildQuery:(q,area,bad)=>bad?("Server HTML Output: <h2>Results for: " + q + "</h2>"):("Server HTML Output: <h2>Results for: " + esc(q) + "</h2>"),
+    run:(q,area,bad)=>{
+      if(!q.includes("<")&&!q.includes(">")&&!q.includes("onerror"))return{status:"good",text:"📄 Standard Page Response: <h2>Results for: " + esc(q) + "</h2>\nFound 18 matching articles."};
+      if(bad){
+        return{status:"bad",text:"🚨 XSS VULNERABILITY DETECTED!\nBrowser HTML parser switched into JavaScript execution mode!\n\n[SIMULATED BROWSER POPUP]:\n====================================\n🔔 alert('XSS') fired!\nOrigin: https://portal.example.com\nSession Token Exposed: eyJhbGciOi...\nDOM Accessibility: Complete control\n===================================="};
+      }else{
+        return{status:"good",text:"🔒 OUTPUT ENCODED SECURELY!\nServer transformed control characters into HTML character entities:\n&lt;script&gt;alert(&#39;XSS&#39;)&lt;/script&gt;\nBrowser displays literal text on screen. Script execution completely prevented."};
+      }
+    }
+  },
+  quiz:[
+    {
+      q:"Why is output encoding the most effective primary defense against XSS?",
+      opts:[
+        "Because it deletes all user input before saving to database",
+        "Because it converts markup characters like < and > into safe character entities so the browser never interprets them as code",
+        "Because it forces all web traffic through a proxy server",
+        "Because it encrypts the client browser"
+      ],
+      ans:1,
+      exp:"Output encoding ensures the browser's parser treats untrusted values purely as data characters to display on screen, not executable instructions."
+    },
+    {
+      q:"What does setting the 'HttpOnly' flag on session cookies accomplish?",
+      opts:[
+        "It prevents JavaScript (including XSS scripts) from reading the cookie via document.cookie",
+        "It stops the browser from sending cookies over HTTPS",
+        "It automatically fixes all XSS bugs on the website",
+        "It prevents users from logging in on mobile devices"
+      ],
+      ans:0,
+      exp:"HttpOnly is a vital defense-in-depth control preventing malicious scripts running via XSS from reading sensitive session identifiers."
+    }
+  ],
   why:["Theft of session data or tokens","Actions performed as the victim","Fake content or login forms on a trusted page","Spread by sending a crafted link"],
   test:["Find where text you send comes back on the page: search, errors, messages.","Notice whether special characters appear literally or change the page.","Check each place it appears: body text, attribute, or script area.","Remember the victim must open the crafted link."],
   prev:["Encode output for where it is used (HTML, attribute, JavaScript, URL)","Use a framework that encodes output by default","Validate and limit input as an extra layer","Add a Content Security Policy","Set HttpOnly on session cookies"],
@@ -373,8 +713,7 @@ const V=[
   mist:["Encoding for HTML when the value is placed inside JavaScript","Relying only on input filters","Turning off a framework's automatic encoding"],
   chk:[
     ["Why is it called reflected?","The input is sent back in the immediate response, not stored."],
-    ["Best primary defense?","Context-aware output encoding."],
-    ["In <script>alert('XSS')<\/script>, why is alert() used in security training?","It serves as a safe diagnostic proof-of-concept that visually demonstrates code execution in the user's browser without modifying system state."]
+    ["Best primary defense?","Context-aware output encoding."]
   ]
 },
 {
@@ -412,6 +751,45 @@ const V=[
     transformNotes:"The shell parses the semicolon as a command delimiter, executing 'id' as a separate instruction with web server privileges.",
     defenseNotes:"Pass arguments as discrete elements in an array directly to the executable without invoking a shell: `subprocess.run(['ping', '-c', '1', ip])`. Without a shell interpreter, `; id` is treated as a literal (invalid) host name argument, preventing injection."
   },
+  sim:{
+    title:"OS Command Injection Terminal Lab",
+    desc:"The server wraps system ping utility. Test shell command separator characters (;, &&, |).",
+    f1:{label:"Target host input",val:"8.8.8.8",preset:"8.8.8.8; id"},
+    f2:{label:"Server Command Template",val:"ping -c 1 {host}",preset:"ping -c 1 {host}"},
+    buildQuery:(h,t,bad)=>bad?("Executing via Shell: /bin/sh -c \"ping -c 1 " + h + "\""):("Executing via Executable Array: execFile(\"ping\", [\"-c\", \"1\", \"" + h + "\"])"),
+    run:(h,t,bad)=>{
+      if(!h.includes(";")&&!h.includes("&")&&!h.includes("|"))return{status:"good",text:"PING " + h + " (56 data bytes)\n64 bytes from " + h + ": icmp_seq=1 ttl=118 time=14.2 ms\n--- " + h + " ping statistics ---\n1 packets transmitted, 1 received, 0% packet loss."};
+      if(bad){
+        return{status:"bad",text:"🚨 COMMAND INJECTION EXECUTED!\nShell parsed separator as command boundary.\n\n[TERMINAL EXECUTION TRACE]:\n$ ping -c 1 8.8.8.8\nPING 8.8.8.8: 56 data bytes... ping OK.\n\n[INJECTED PROCESS OUTPUT]:\n$ id\nuid=33(www-data) gid=33(www-data) groups=33(www-data)\nHost shell compromised under server privileges."};
+      }else{
+        return{status:"good",text:"🔒 ARGUMENT PASSED SAFELY!\nOperating system invoked 'ping' binary directly without a shell interpreter.\nResult: ping: cannot resolve host '" + h + "': Unknown host.\nMetacharacter ';' was evaluated strictly as part of host string. No second command executed."};
+      }
+    }
+  },
+  quiz:[
+    {
+      q:"Why is passing an argument array to an executable safer than executing a shell command string?",
+      opts:[
+        "Because argument arrays are automatically encrypted",
+        "Because without invoking a shell interpreter, shell metacharacters (; & |) cannot spawn secondary commands",
+        "Because argument arrays only run in administrator mode",
+        "Because shell commands cannot connect to the internet"
+      ],
+      ans:1,
+      exp:"Direct execution (like execFile or subprocess with shell=False) passes values directly to the binary's argv array, bypassing shell command interpretation entirely."
+    },
+    {
+      q:"In Unix/Linux shells, what does the semicolon (;) metacharacter instruct the shell to do?",
+      opts:[
+        "Terminate the current line as a comment",
+        "Execute the next command sequentially regardless of whether the first succeeded",
+        "Restart the operating system",
+        "Print out the user's password"
+      ],
+      ans:1,
+      exp:"The semicolon is a standard shell command delimiter that separates sequential commands."
+    }
+  ],
   why:["Running commands on the server","Reading or changing server files","Using the server to attack other systems","Possible full compromise of the host"],
   test:["Look for features that seem to call system tools: ping, conversion, backups.","Think about which characters a shell treats as special.","Notice if output looks like raw tool output.","Observe differences in response time or output when input changes."],
   prev:["Avoid system commands when a library can do the job","Pass arguments as a list, not one shell string","Allow-list valid input, such as IP addresses only","Run the app as a low-privilege user","Keep the server able to reach only what it needs"],
@@ -420,25 +798,85 @@ const V=[
   mist:["Blocking a short list of bad characters","Validating in the browser only","Running the web app as an administrator"],
   chk:[
     ["Why is a shell string risky?","The shell interprets special characters in the input as commands."],
-    ["Safer alternative?","Use a library, or run a fixed command with separate arguments and validated input."],
-    ["In 8.8.8.8; id, what role does the semicolon (;) play?","The semicolon is a shell command separator, which instructs the command interpreter to execute 'id' as an independent new command."]
+    ["Safer alternative?","Use a library, or run a fixed command with separate arguments and validated input."]
   ]
 }
 ];
 
 const ORDER=["overview",...V.map(v=>v.id),"compare"];
 const DONE=new Set();try{JSON.parse(localStorage.getItem("wv-done")||"[]").forEach(x=>DONE.add(x))}catch(e){}
-const code=(t,c)=>`<div class="code ${c||""}" data-c="${esc(t)}">${esc(t)}<button class="cp">Copy</button></div>`;
+const QUIZ_ANS={};try{Object.assign(QUIZ_ANS,JSON.parse(localStorage.getItem("wv-quiz")||"{}"))}catch(e){}
+
+const code=(t,c)=>`<div class="code ${c||""}" data-c="${esc(t)}">${highlightCode(t)}<button class="cp">Copy</button></div>`;
 const list=(a,c)=>`<ul class="${c||""}">${a.map(x=>`<li>${x}</li>`).join("")}</ul>`;
 const learnBar=id=>{const i=ORDER.indexOf(id),nx=ORDER[i+1];return `<div class="learn"><button data-learn="${id}" class="${DONE.has(id)?"on":""}">${DONE.has(id)?"Learned ✓":"Mark as learned"}</button>${nx?`<button class="nx" data-go="${nx}">Next topic →</button>`:""}</div>`};
 const title=id=>id=="overview"?"Overview":id=="compare"?"Compare and Review":V.find(v=>v.id==id).n;
 const IDX=[];
+
+function renderSim(v){
+  const s=v.sim;
+  return `<div class="sim-panel" data-sim="${v.id}">
+    <div class="sim-head">
+      <div>
+        <h3>🧪 ${esc(s.title)}</h3>
+        <p>${esc(s.desc)}</p>
+      </div>
+      <span class="sim-badge">Interactive Lab</span>
+    </div>
+    <div class="sim-controls">
+      <div class="sim-field">
+        <label>${esc(s.f1.label)}</label>
+        <input type="text" class="sim-input s-f1" value="${esc(s.f1.val)}" data-p="${esc(s.f1.preset)}">
+        <div class="sim-presets">
+          <span style="font-size:11.5px;color:var(--mu)">Presets:</span>
+          <button class="sim-preset-btn s-apply-p" type="button">Try Payload: "${esc(s.f1.preset)}"</button>
+          <button class="sim-preset-btn s-reset" type="button" data-r="${esc(s.f1.val)}">Reset default</button>
+        </div>
+      </div>
+      <div class="sim-field">
+        <label>${esc(s.f2.label)}</label>
+        <input type="text" class="sim-input s-f2" value="${esc(s.f2.val)}" readonly style="opacity:0.85">
+      </div>
+    </div>
+    <div class="sim-mode-bar">
+      <button class="sim-mode-btn on bad s-mode" data-m="bad" type="button">⚠️ Unsafe Pattern (Vulnerable)</button>
+      <button class="sim-mode-btn good s-mode" data-m="good" type="button">🛡️ Secured Pattern (Defended)</button>
+    </div>
+    <div class="sim-live">
+      <span style="font-size:11px;text-transform:uppercase;color:var(--mu);display:block;margin-bottom:4px">Real-Time Backend Construction:</span>
+      <span class="s-query-view" style="color:var(--cy)"></span>
+    </div>
+    <button class="sim-run-btn s-run" type="button">⚡ Execute Test Request</button>
+    <div class="sim-result s-out"></div>
+  </div>`;
+}
+
+function renderQuiz(v){
+  return `<div class="quiz-box" data-qv="${v.id}">
+    <div class="quiz-head">
+      <b>Interactive Knowledge Check</b>
+      <span class="quiz-score" id="qs-${v.id}">2 Questions</span>
+    </div>
+    ${v.quiz.map((q,idx)=>{
+      const key=v.id+"-"+idx;
+      const saved=QUIZ_ANS[key];
+      return `<div class="quiz-item" data-qk="${key}" data-ans="${q.ans}">
+        <div class="quiz-q">${idx+1}. ${esc(q.q)}</div>
+        <div class="quiz-opts">
+          ${q.opts.map((opt,oi)=>`<button class="quiz-opt ${saved!=null?(oi===q.ans?"correct":(oi===saved?"wrong":"")):""} ${saved!=null?"locked":""}" data-oi="${oi}" type="button"><span style="color:var(--mu);font-weight:700">${String.fromCharCode(65+oi)}.</span> ${esc(opt)}</button>`).join("")}
+        </div>
+        <div class="quiz-exp" style="${saved!=null?"display:block":""}"><b>Explanation:</b> ${esc(q.exp)}</div>
+      </div>`;
+    }).join("")}
+  </div>`;
+}
 
 function vuln(v){
  IDX.push({s:v.id,t:v.n,x:(v.n+" "+v.what+" "+v.cat).toLowerCase()});
  IDX.push({s:v.id,t:v.n+": Where to exploit",x:(v.n+" where exploit attack surface entry "+v.where.map(w=>w.surface+" "+w.ex).join(" ")).toLowerCase()});
  IDX.push({s:v.id,t:v.n+": Exploit mechanism",x:(v.n+" how it works mechanism exploit steps "+v.exploitMech.summary).toLowerCase()});
  IDX.push({s:v.id,t:v.n+": Payload anatomy",x:(v.n+" payload "+v.payload.sample+" "+v.payload.breakdown.map(b=>b.token+" "+b.role).join(" ")).toLowerCase()});
+ IDX.push({s:v.id,t:v.n+": Interactive simulator",x:(v.n+" lab simulator test live sandbox").toLowerCase()});
  v.chk.forEach(c=>IDX.push({s:v.id,t:v.n+": "+c[0],x:(c[0]+" "+c[1]).toLowerCase()}));
 
  return `<h1>${v.n}<span class="tag ${v.lv=="High"?"hi":"md"}">${v.lv} impact</span><span class="tag ct">${v.cat}</span></h1><p class="lead">${v.one}</p>
@@ -482,9 +920,9 @@ function vuln(v){
   <div class="transform-box">
    <div class="transform-title">Intended Backend Execution vs. Injected Execution</div>
    <div style="font-size:13px;color:var(--mu);margin-bottom:4px">Intended structure:</div>
-   <div class="transform-code">${esc(v.payload.intended)}</div>
+   <div class="transform-code">${highlightCode(v.payload.intended)}</div>
    <div style="font-size:13px;color:var(--bad);margin:10px 0 4px;font-weight:600">Altered structure with payload:</div>
-   <div class="transform-code" style="color:#fecaca">${esc(v.payload.injected)}</div>
+   <div class="transform-code" style="color:#fecaca">${highlightCode(v.payload.injected)}</div>
    <p style="font-size:13px;color:var(--mu);margin-top:8px">${esc(v.payload.transformNotes)}</p>
   </div>
 
@@ -494,6 +932,9 @@ function vuln(v){
   </div>
  </div>
 
+ <h2>Interactive Lab Simulator</h2>
+ ${renderSim(v)}
+
  <h2>Code patterns</h2>
  <div class="tabs"><button data-t="bad" class="on">Unsafe pattern</button><button data-t="good">Safer pattern</button></div>
  <div data-tp="bad">${code(v.bad,"bad")}</div><div data-tp="good" style="display:none">${code(v.good,"good")}</div>
@@ -502,15 +943,18 @@ function vuln(v){
  <h2>What should a tester understand?</h2><div class="card">${list(v.test)}<p style="margin-top:8px">The goal is to understand where trust is missing, not to memorise tricks.</p></div>
  <h2>How to prevent it</h2><div class="card">${list(v.prev,"chk")}</div>
  <h2>Common mistakes</h2><div class="note">${list(v.mist)}</div>
- <h2>Check yourself</h2>${v.chk.map(c=>`<details><summary>${c[0]}</summary><div>${c[1]}</div></details>`).join("")}${learnBar(v.id)}`
+
+ <h2>Check yourself</h2>
+ ${renderQuiz(v)}
+ ${learnBar(v.id)}`;
 }
 
 const P={
  overview:()=>{
-  IDX.push({s:"overview",t:"Core ideas",x:"untrusted input server-side authorization least privilege attack surface payload entry points"});
+  IDX.push({s:"overview",t:"Core ideas",x:"untrusted input server-side authorization least privilege attack surface payload entry points simulator"});
   return `<div class="hero">
    <h1>Web Vulnerabilities</h1>
-   <p class="lead">Six critical web application security weaknesses. For each topic, explore exactly where it can be exploited, step-by-step how the exploit works, and what you put as payload.</p>
+   <p class="lead">Six critical web application security weaknesses. For each topic, explore where it can be exploited, how it works, what to put as payload, and test live in interactive labs.</p>
    <button class="cta" data-go="sqli">Start with SQL Injection →</button>
   </div>
   <h2>Three Core Questions in Each Module</h2>
@@ -536,10 +980,10 @@ const P={
   </div>
   <h2>Modules</h2>
   <div class="grid">${V.map(v=>`<button class="card mod" data-go="${v.id}"><h3>${v.n}<span class="tag ${v.lv=="High"?"hi":"md"}">${v.lv}</span></h3><p>${v.one}</p></button>`).join("")}</div>
-  <div class="note" style="margin-top:20px">This module teaches security concepts for authorized training and secure software development. Always obtain authorized permission before testing.</div>`+learnBar("overview")
+  <div class="note" style="margin-top:20px">This module teaches security concepts for authorized training and secure software development. Always obtain authorized permission before testing.</div>`+learnBar("overview");
  },
  compare:()=>{
-  IDX.push({s:"compare",t:"Comparison table",x:"compare summary defenses impact attack surface payload"});
+  IDX.push({s:"compare",t:"Comparison table",x:"compare summary defenses impact attack surface payload certificate"});
   return `<h1>Compare and Review</h1><p class="lead">A complete summary matrix covering attack surfaces, mechanisms, payloads, and defenses.</p>
   <div class="wrapx card">
    <table>
@@ -566,7 +1010,7 @@ const P={
    <div class="card"><h3>Separate data from code</h3><p>Parameterized queries stop SQL Injection. Argument lists stop Command Injection. Output encoding stops XSS.</p></div>
    <div class="card"><h3>Check who is asking</h3><p>Ownership and role checks on the server stop IDOR and Broken Access Control.</p></div>
    <div class="card"><h3>Confine the resource</h3><p>Resolving and checking canonical paths stops Path Traversal.</p></div>
-  </div>`+learnBar("compare")
+  </div>`+learnBar("compare");
  }
 };
 
@@ -575,13 +1019,27 @@ V.forEach(v=>P[v.id]=()=>vuln(v));
 function render(){
  $("#main").innerHTML=ORDER.map(i=>`<section id="s-${i}">${P[i]()}</section>`).join("");
  $("#nav").innerHTML=ORDER.map(i=>`<button data-go="${i}" id="n-${i}">${title(i)}<span class="ck">✓</span></button>`).join("");
+ initSimulators();
 }
 
 function prog(){
  const n=ORDER.filter(i=>DONE.has(i)).length;
- $("#pt").textContent=n+" of "+ORDER.length+" learned";
- $("#pb").style.width=n/ORDER.length*100+"%";
- ORDER.forEach(i=>$("#n-"+i).classList.toggle("done",DONE.has(i)));
+ const total=ORDER.length;
+ const ptEl=$("#pt"), pbEl=$("#pb"), certBtn=$("#cert-btn");
+ if(ptEl)ptEl.textContent=n+" of "+total+" learned";
+ const pct=n/total*100;
+ if(pbEl){
+  pbEl.style.width=pct+"%";
+  if(pbEl.parentElement)pbEl.parentElement.classList.toggle("done",n===total);
+ }
+ ORDER.forEach(i=>{
+  const ni=$("#n-"+i);
+  if(ni)ni.classList.toggle("done",DONE.has(i));
+ });
+ 
+ // Show certificate button when all 6 vulnerability topics are learned
+ const allVulnsLearned=V.every(v=>DONE.has(v.id));
+ if(certBtn)certBtn.style.display=allVulnsLearned?"block":"none";
 }
 
 function go(id){
@@ -593,9 +1051,61 @@ function go(id){
  try{history.replaceState(null,"","#"+id)}catch(e){}
 }
 
+// Interactive Simulator Event Attachments
+function initSimulators(){
+ document.querySelectorAll(".sim-panel").forEach(panel=>{
+  const vid=panel.dataset.sim;
+  const vdata=V.find(x=>x.id==vid);
+  if(!vdata||!vdata.sim)return;
+  const sim=vdata.sim;
+
+  const f1=panel.querySelector(".s-f1");
+  const f2=panel.querySelector(".s-f2");
+  const modeBtns=panel.querySelectorAll(".s-mode");
+  const qview=panel.querySelector(".s-query-view");
+  const runBtn=panel.querySelector(".s-run");
+  const out=panel.querySelector(".s-out");
+  const presetBtn=panel.querySelector(".s-apply-p");
+  const resetBtn=panel.querySelector(".s-reset");
+
+  let curMode="bad";
+
+  function refreshQuery(){
+    const u=f1?f1.value:"";
+    const p=f2?f2.value:"";
+    qview.textContent=sim.buildQuery(u,p,curMode==="bad");
+  }
+  refreshQuery();
+
+  if(f1)f1.addEventListener("input",refreshQuery);
+  if(presetBtn)presetBtn.onclick=()=>{if(f1){f1.value=f1.dataset.p;refreshQuery();}};
+  if(resetBtn)resetBtn.onclick=()=>{if(f1){f1.value=resetBtn.dataset.r;refreshQuery();}};
+
+  modeBtns.forEach(btn=>{
+    btn.onclick=()=>{
+      modeBtns.forEach(b=>b.classList.remove("on"));
+      btn.classList.add("on");
+      curMode=btn.dataset.m;
+      refreshQuery();
+      out.style.display="none";
+    };
+  });
+
+  if(runBtn)runBtn.onclick=()=>{
+    const u=f1?f1.value:"";
+    const p=f2?f2.value:"";
+    const res=sim.run(u,p,curMode==="bad");
+    out.className="sim-result s-out "+res.status;
+    out.textContent=res.text;
+    out.style.display="block";
+  };
+ });
+}
+
 render();
 prog();
 
+// Global click event dispatcher
 document.addEventListener("click",e=>{
  const t=e.target;let b;
  if(b=t.closest("[data-go]"))return go(b.dataset.go);
@@ -624,8 +1134,45 @@ document.addEventListener("click",e=>{
   go(b.dataset.r);
   $("#q").value="";
   $("#res").style.display="none";
+  return;
+ }
+
+ // Quiz option click handling
+ if(b=t.closest(".quiz-opt:not(.locked)")){
+  const item=b.closest(".quiz-item");
+  const qkey=item.dataset.qk;
+  const correctIdx=parseInt(item.dataset.ans,10);
+  const chosenIdx=parseInt(b.dataset.oi,10);
+
+  item.querySelectorAll(".quiz-opt").forEach(opt=>{
+    opt.classList.add("locked");
+    const oi=parseInt(opt.dataset.oi,10);
+    if(oi===correctIdx)opt.classList.add("correct");
+    else if(oi===chosenIdx)opt.classList.add("wrong");
+  });
+
+  const exp=item.querySelector(".quiz-exp");
+  if(exp)exp.style.display="block";
+
+  QUIZ_ANS[qkey]=chosenIdx;
+  try{localStorage.setItem("wv-quiz",JSON.stringify(QUIZ_ANS))}catch(x){}
  }
 });
+
+// Certificate Modal Controls
+const certModal=$("#cert-modal");
+const certBtn=$("#cert-btn");
+const certDate=$("#cert-date");
+if(certDate)certDate.textContent=new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
+
+if(certBtn)certBtn.onclick=()=>{
+ certModal.classList.add("open");
+};
+$("#btn-cert-close").onclick=()=>certModal.classList.remove("open");
+certModal.onclick=e=>{if(e.target===certModal)certModal.classList.remove("open")};
+$("#btn-cert-print").onclick=()=>{
+ window.print();
+};
 
 $("#menu").onclick=()=>$("#side").classList.toggle("open");
 
